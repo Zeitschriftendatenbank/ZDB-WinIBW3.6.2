@@ -1,0 +1,9 @@
+0500 Obxz
+1101 cr
+1100 
+4000  [[Elektronische Ressource]]
+4025 
+4030 
+4060 Online-Ressource
+4085 =u 
+5080 

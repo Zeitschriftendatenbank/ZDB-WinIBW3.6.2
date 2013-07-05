@@ -1,0 +1,124 @@
+﻿<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?> 
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+<!-- Include your own stylesheet here. -->
+
+<!-- Define the dialog: -->
+<dialog
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	title="Digitalisierung konfigurieren"
+	onload="onLoad();"
+	buttons="accept,cancel"
+	ondialogaccept="return onAccept();"
+	ondialogcancel="return onCancel();"
+	onunload="application.activate();"
+	style="min-width: 33em"
+	id="ZDB_DigiConfig"
+>
+
+<script>
+<![CDATA[
+
+var application = Components.classes["@oclcpica.nl/kitabapplication;1"]
+                        .getService(Components.interfaces.IApplication);
+
+function onLoad()
+{
+	// Whatever needs to be done when the SampleDialog opens.
+	// FileInput-Objekt deklarieren					
+	var fileInput = Components.classes["@oclcpica.nl/scriptinputfile;1"]
+						.createInstance(Components.interfaces.IInputTextFile);
+	// Falls die Datei "DigiConfig.txt" bereits exisitiert, wird sie geöffnet und ihr Inhalt ausgelesen
+	if(fileInput.openSpecial("ProfD", "DigiConfig.txt")) {
+		var aLine = "";
+		var partOfLine = "";
+		while((aLine = fileInput.readLine()) != null) {
+			partOfLine = aLine.match(/([0-9]*)\s(.*)/);
+			document.getElementById(partOfLine[1]).value = partOfLine[2];
+		}
+	}
+	return true;
+}
+
+function onAccept()
+{
+	// The Accept button is pressed..
+	var FileInput = "1101 " + document.getElementById("1101").value + "\n" + 
+					"1109 " + document.getElementById("1109").value + "\n" +
+					"2050 " + document.getElementById("2050").value + "\n" +
+					"4048 " + document.getElementById("4048").value + "\n" +
+					"4085 " + document.getElementById("4085").value + "\n" +
+					"4119 " + document.getElementById("4119").value + "\n" +
+					"4233 " + document.getElementById("4233").value + "\n" +
+					"4237 " + document.getElementById("4237").value + "\n" +
+					"4251 " + document.getElementById("4251").value;
+					
+	// FileOutput-Objekt deklarieren
+	var FileOutput = Components.classes["@oclcpica.nl/scriptoutputfile;1"]
+						.createInstance(Components.interfaces.IOutputTextFile);
+	// Datei mit Namen "DigiConfig.txt" im Ordner "Profiles" anlegen, sofern diese nicht bereits existiert
+	FileOutput.createSpecial("ProfD", "DigiConfig.txt");
+	// Bestehender Inhalt wird überschrieben
+	FileOutput.setTruncate(true);
+	// Inhalt in Datei schreiben
+	FileOutput.write(FileInput);
+	return true;
+}
+
+function onCancel()
+{
+	// The Cancel button is pressed..
+	return true;
+}
+
+]]>
+</script>
+
+	<!-- Layout the dialog controls: -->
+	<vbox>
+		<vbox align="left" flex="1">
+			<description style="width: 30em;" flex="1">
+				Bitte tragen Sie Ihre Angaben in die Felder ein und speichern Sie mit dem Knopf "OK". Die Inhalte werden vom ZDB-Skripte "Digitalisierung" automatisch übernommen.
+			</description>
+			<separator/>
+			<vbox>
+				<label value="1101:"/>
+				<textbox id="1101" value="" size="70"/>
+			</vbox>
+			<vbox>
+				<label value="1109:"/>
+				<textbox id="1109" value="" size="70"/>
+			</vbox>
+			<vbox>
+				<label value="2050:"/>
+				<textbox id="2050" value="" size="70"/>
+			</vbox>
+			<vbox>
+				<label value="4048:"/>
+				<textbox id="4048" value="" size="70"/>
+			</vbox>
+			<vbox>
+				<label value="4085:"/>
+				<textbox id="4085" value="" size="70"/>
+			</vbox>			
+			<vbox>
+				<label value="4119:"/>
+				<textbox id="4119" value="" size="70"/>
+			</vbox>
+			<vbox>
+				<label value="4233:"/>
+				<textbox id="4233" value="" size="70"/>
+			</vbox>
+			<vbox>
+				<label value="4237:"/>
+				<textbox id="4237" value="" size="70"/>
+			</vbox>
+			<vbox>
+				<label value="4251:"/>
+				<textbox id="4251" value="" size="70"/>
+			</vbox>
+		</vbox>
+	</vbox>
+	<separator/>
+
+</dialog>
