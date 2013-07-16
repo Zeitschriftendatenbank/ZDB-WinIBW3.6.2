@@ -83,6 +83,11 @@ chrome/ibw/content/xul/TableFunctionDlg.xul
 chrome/ibw/content/xul/transliterate_dialog.js
 chrome/ibw/content/xul/transliterate_dialog.xul
 res/
+defaults/pref/all.js
+defaults/pref/diacritics.js
+defaults/pref/mailnews.js
+defaults/pref/security-prefs.js
+defaults/pref/winpref.js
 plugins/
 images/
 components/
