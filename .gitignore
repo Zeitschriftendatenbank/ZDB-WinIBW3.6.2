@@ -82,7 +82,6 @@ chrome/ibw/content/xul/Table*
 chrome/ibw/content/xul/TableFunctionDlg.xul
 chrome/ibw/content/xul/transliterate_dialog.js
 chrome/ibw/content/xul/transliterate_dialog.xul
-defaults/pref/
 res/
 plugins/
 images/
