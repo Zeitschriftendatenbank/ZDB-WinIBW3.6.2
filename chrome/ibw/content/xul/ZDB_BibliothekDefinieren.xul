@@ -38,7 +38,11 @@ function onAccept()
 	}
 	if (idn_input.match(/^!(\d{8,9}[\d|x|X])!$/gi)){
 		application.writeProfileString("zdb.userdata", "eigeneBibliothek", idn_input);
-		application.messageBox("BibliothekDefinieren", "Die IDN " + idn_input + " wurde gespeichert.",  "message-icon");
+		if(application.getProfileString("zdb.userdata", "eigeneBibliothek", false) == idn_input){
+			application.messageBox("BibliothekDefinieren", "Die IDN " + idn_input + " wurde gespeichert.",  "message-icon");
+		} else {
+			
+		}
 	// Falls eine leere Eingabe erfolgt ist, wird der bestehende Inhalt gelöscht
 	} else if (idn_input.length == 0){
 		application.writeProfileString("zdb.userdata", "eigeneBibliothek", "");
