@@ -410,78 +410,101 @@ function CKneu () {
 	application.activeWindow.title.endOfField(true);
 }
 
+
 function zdb_Reziprok() {
 /**************************************************************
  
-2012-03-30  S. Grund, DNB  Anpassungen für GND
+edits Hachmann, Grund, Klee
+letzte Änderung 2012-12-05  Klee
 
 /**************************************************************/
   
   // Skript muss bei reziprokem Verknuepfungsfeld aufgerufen werden und erzeugt an der Gegenaufnahme eine Verknüpfung.
-  if (!application.activeWindow.title) {
-  application.messageBox("Reziprok", "Die Funktion kann nur aus dem Korrekturmodus aufgerufen werden.",  "alert-icon");
-  return;
-  }
-  
-//quelle = new Array("450 |a|", "450 |c|", "4244 f#", "4244 s#", "4244 z#", "4241 ", "4242 ", "4243 ");
-quelle = new Array("510 vorg", "510 nach", "511 vorg", "511 nach", "551 vorg", "551 nach", "4244 f#", "4244 s#", "4244 z#", "4241", "4242", "4243");
-ziel = new Array("510 $4nach", "510 $4vorg", "511 $4nach", "511 $4vorg", "551 $4nach", "551 $4vorg", "4244 s#", "4244 f#", "4244 z#", "4242", "4241", "4243");
-// Quell-ID-Nummer
-var idn = application.activeWindow.getVariable("P3GPP");
-// Aktuelle Feldnummer ermitteln
-var tag = application.activeWindow.title.tag;
-var tagcontent = application.activeWindow.title.currentField;
-application.activeWindow.title.startOfField(false);
-//Unterschiede zw. GND- und Titelfeldern
-  if (tag.length < 4) {
-  //Relationscode ermitteln
-  var code = tagcontent.substr(tagcontent.indexOf("$4")+2,4)
-  var feldnr = tag + " " + code;
-  } else {
-  application.activeWindow.title.charRight(7, true);
-  var feldnr = application.activeWindow.title.selection;
-  }
-var reziFeld = "";
-  
-  for (var i = 0; i <= 11; i++) {
-    if (feldnr == (quelle[i]) || (feldnr.indexOf(quelle[i]) > -1)) {
-      if (i<= 5) {
-      //Aktion für GND-Felder 
-      reziFeld = ziel[i].substr(0,3) + " !" + idn + "!" + ziel[i].substr(4);
-      } else if ((i > 5) && (i <= 8)) {
-      //Aktion für ZDB-Felder mit Funktionscode
-      reziFeld = ziel[i] + "!" + idn + "!";
-      } else if (i > 8) {
-      //die letzen drei Felder haben kein Steuerungszeichen, hier gilt nur der Tag
-      reziFeld = ziel[i] + " !" + idn + "!";
-      }
-    }  
-  }
+	if (!application.activeWindow.title) 
+	{
+		application.messageBox("Reziprok", "Die Funktion kann nur aus dem Korrekturmodus aufgerufen werden.",  "alert-icon");
+		return;
+	}
 
-  // Fehlermeldung bei falschem Feld
-  if (reziFeld == "") {
-  application.messageBox("Reziprok", "Die Funktion kann nicht aus dem Feld '" + feldnr + "' aufgerufen werden.",  "alert-icon");
-  return;
-  }
-// Prüfen, ob eine von Ausrufezeichen umschlossene IDN vorhanden ist
-var text = tagcontent.substring(tagcontent.indexOf("!"),tagcontent.lastIndexOf("!")+1);
-  
-var regExpPPN = /!(\d{8,9}[\d|x|X])!/;
-  if (regExpPPN.test(text) == true){
-  idn2 = regExpPPN.exec(text);
-  // Kommando abschicken und Ergebnis in neuem Fenster anzeigen
-  application.activeWindow.command("f idn " + idn2[1], true);
+	// Quell-ID-Nummer
+	var quellID = application.activeWindow.getVariable("P3GPP");
+	var felder = {
+		"510 vorg":"510 !" + quellID + "!$4nach",
+		"510 nach":"510 !" + quellID + "!$4vorg",
+		"511 vorg":"511 !" + quellID + "!$4nach",
+		"511 nach":"511 !" + quellID + "!$4vorg",
+		"551 vorg":"551 !" + quellID + "!$4nach",
+		"551 nach":"551 !" + quellID + "!$4vorg",
+		"4244 f#":"4244 s#!" + quellID + "!",
+		"4244 s#":"4244 f#!" + quellID + "!",
+		"4244 z#":"4244 z#!" + quellID + "!",
+		"4241":"4242 !" + quellID + "!",
+		"4242":"4241 !" + quellID + "!",
+		"4243":"4243 !" + quellID + "!"}
 
+	// Aktuelle Feldnummer ermitteln
+	var tag = application.activeWindow.title.tag;
+	var tagcontent = application.activeWindow.title.currentField;
+	// Prüfen, ob eine von Ausrufezeichen umschlossene IDN vorhanden ist
+	var text = tagcontent.substring(tagcontent.indexOf("!"),tagcontent.lastIndexOf("!")+1); 
+	var regExpPPN = /!(\d{8,9}[\d|x|X])!/;
+	if (!regExpPPN.test(text)) {
+		application.messageBox("Reziprok linken", "Es ist keine ID-Nummer zum Verlinken gefunden worden.", "error-icon");
+		return;
+	}
+	application.activeWindow.title.startOfField(false);
+	var reziFeld = "";
+	//Unterschiede zw. GND- und Titelfeldern
+	if (tag.length < 4)
+	{
+		//Relationscode ermitteln
+		var code = tagcontent.substr(tagcontent.indexOf("$4")+2,4)
+		var feldnr = tag + " " + code;
+		reziFeld = felder[feldnr];
+	} 
+	else
+	{
+		var feldnr = tagcontent.match(/^\d{4,4}(\s[fsz]#)?/g);
+		reziFeld = felder[feldnr[0]];
+	}
+
+
+	// Fehlermeldung bei falschem Feld
+	if (reziFeld == "" || reziFeld == null || !reziFeld) {
+		application.messageBox("Reziprok", "Die Funktion kann nicht aus dem Feld '" + tag + "' aufgerufen werden.",  "alert-icon");
+		return;
+	}
+
+   // Datensatz speichern, wenn Status != OK Abbruch.
+    application.activeWindow.simulateIBWKey ("FR");
+	if (application.activeWindow.status != "OK"){
+	  application.messageBox("Reziprok linken", "Bitte Fehler korrigieren und Funktion erneut ausführen", "error-icon");
+	  return;
+	}
+	zielID = regExpPPN.exec(text);
+	// Kommando abschicken und Ergebnis in gleichen Fenster anzeigen
+	application.activeWindow.command("f idn " + zielID[1], false); // <=== Kommando in demselben Fenster
+
+	  
     //Datensatz in der Vollanzeige prüfen. Wenn PPN noch nicht vorkommt, dann jetzt einfuegen:
-    if (application.activeWindow.copyTitle().indexOf(idn) == -1 ) {
-    // F7 (Korrektur" drücken)
-    application.activeWindow.simulateIBWKey ("F7");
-    application.activeWindow.title.endOfBuffer(false);
-    application.activeWindow.title.insertText(reziFeld + "\n");
-    } else {
-    application.messageBox("Reziprok", "Der Link zur " + idn + " ist schon vorhanden!", "alert-icon");
-    }
-  } else{
-    application.messageBox("Reziprok", "Es ist keine Verknüpfungs-ID-Nummer vorhanden.", "alert-icon");
-  }
+    if (application.activeWindow.copyTitle().indexOf(quellID) == -1 ) 
+	{
+		// F7 (Korrektur" drücken)
+		application.activeWindow.simulateIBWKey ("F7");
+		application.activeWindow.title.endOfBuffer(false);
+		application.activeWindow.title.insertText(reziFeld + "\n");
+		var thePrompter = utility.newPrompter();
+		if (thePrompter.confirmEx("reziprok Linken", "Datensatz jetzt speichern?", "Ja", "Nein", "", "", "") == 0) 
+		{
+			application.activeWindow.simulateIBWKey ("FR");
+			if (application.activeWindow.status == "OK")
+			{ 
+				application.activeWindow.command("f idn " + quellID + " or " + zielID[1] + ";s k", false);    
+			}
+		}
+	}
+	else {
+		application.messageBox("Reziprok", "Der Link zu " + quellID + " ist schon vorhanden!", "alert-icon");
+	}
+ 
 }

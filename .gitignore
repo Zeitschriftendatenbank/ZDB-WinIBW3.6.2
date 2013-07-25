@@ -12,7 +12,7 @@
 *.ttf
 # ignored files and directories
 splash.png
-winibw.txt
+winibw*
 ERRORLOG
 GIT_HOWTO.txt
 Uniscribe.htm
