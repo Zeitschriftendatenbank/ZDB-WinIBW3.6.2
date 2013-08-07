@@ -481,6 +481,7 @@ function zdb_Parallelausgabe () {
 		return true;
 	}
 	
+	/*
 	//-- open title
 	application.activeWindow.command("k p", false);
 	
@@ -490,7 +491,7 @@ function zdb_Parallelausgabe () {
 	var code = "";
 	var x = 0;
 	
-	/*
+	
 	//-- analyse and convert field 4244
 	while(application.activeWindow.title.findTag("039E", x, false, true, false) !== ""){
 			feld4244[x] = application.activeWindow.title.findTag("039E", x, false, true, false);
@@ -506,9 +507,10 @@ function zdb_Parallelausgabe () {
 			}
 			x++;
 	}
-	*/
+	
 	//-- close title and go back
 	zdb_Back();
+	*/
 	
 	// Titelkopie auf zdb_titeldatenkopie_digi.ttl setzen
 	var titlecopyfileStandard = application.getProfileString("winibw.filelocation", "titlecopy", "");
