@@ -30,8 +30,8 @@ pref("ibw.presentation.syntaxcolor.D.format.7", '$1<a href="$2">$2</a>$3');
 pref("ibw.presentation.syntaxcolor.D.regex.8", "(=u )(http.*?)((<)|(=x))");
 pref("ibw.presentation.syntaxcolor.D.format.8", '$1<a href="$2">$2</a>$3');
 // 9. Istgleich-Subfelder in Rot
-pref("ibw.presentation.syntaxcolor.D.regex.9", "(=[a-z0-9]+ )");
-pref("ibw.presentation.syntaxcolor.D.format.9", '<span style="font-weight:bold;color:CC3300">$0</span>');
+//pref("ibw.presentation.syntaxcolor.D.regex.9", "(=[a-z0-9]{1}\s)");
+//pref("ibw.presentation.syntaxcolor.D.format.9", '<span style="font-weight:bold;color:CC3300">$0</span>');
 
 
 //
@@ -49,8 +49,8 @@ pref("ibw.presentation.syntaxcolor.DA.format.4", '<div style="direction: ltr">$1
 pref("ibw.presentation.syntaxcolor.DA.regex.5", "(>[67][01357][0138]5?</[sS][pP][aA][nN]> )(.*?)(</[dD][iI][vV]>)");
 pref("ibw.presentation.syntaxcolor.DA.format.5", '$1<span>$2</span>');
 //6. Dollar-Subfelder in Rot 
-pref("ibw.presentation.syntaxcolor.DA.regex.6", "(\$[a-zA-Z0-9])");
-pref("ibw.presentation.syntaxcolor.DA.format.6", '<span style="font-weight:bold;color:CC3300">$0</span>');
+//pref("ibw.presentation.syntaxcolor.DA.regex.6", "(\$[a-zA-Z0-9])");
+//pref("ibw.presentation.syntaxcolor.DA.format.6", '<span style="font-weight:bold;color:CC3300">$0</span>');
 //7. Erzeugung von anklickbaren Links in GDN-Kommentarfeldern, mehr als zwei URLs werden nicht anklickbar
 pref("ibw.presentation.syntaxcolor.DA.regex.7", '(\$u</[sS][pP][aA][nN]>)(http.*?)(<)');
 pref("ibw.presentation.syntaxcolor.DA.format.7", '$1<a href="$2">$2</a>$3');
@@ -58,8 +58,8 @@ pref("ibw.presentation.syntaxcolor.DA.format.7", '$1<a href="$2">$2</a>$3');
 pref("ibw.presentation.syntaxcolor.DA.regex.8", "(=u )(http.*?)((<)|(=x))");
 pref("ibw.presentation.syntaxcolor.DA.format.8", '$1<a href="$2">$2</a>$3');
 // 9. Istgleich-Subfelder in Rot
-pref("ibw.presentation.syntaxcolor.DA.regex.9", "(=[a-z0-9]+ )");
-pref("ibw.presentation.syntaxcolor.DA.format.9", '<span style="font-weight:bold;color:CC3300">$0</span>');
+//pref("ibw.presentation.syntaxcolor.DA.regex.9", "(=[a-z0-9]+ )");
+//pref("ibw.presentation.syntaxcolor.DA.format.9", '<span style="font-weight:bold;color:CC3300">$0</span>');
 
 //
 // P

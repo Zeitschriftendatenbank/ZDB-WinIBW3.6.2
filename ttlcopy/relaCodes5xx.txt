@@ -84,7 +84,7 @@ nazw	Name, zeitweise	Tb551; Tg551  Tf511  Tg510; Tb510;Tf510
 obal	Oberbegriff allgemein	Tf550; Tg550; Tb550; Tp550; Ts550; Tu550 Ts530
 obge	Oberbegriff, generisch	Ts550
 obin	Oberbegriff, instantiell	Tf550; Tg550; Tb550; Tp550; Ts550; Tu550
-obpa	Oberbegriff, partitiv	Tf511 Tu530  Tf550 Tb550; Ts550; Tu550 Tg551
+obpa	Oberbegriff, partitiv	Tf511 Tu530  Tf550 Tb550; Ts550; Tu550 Tg551 Tp500
 orta	Ort, Sitz	Tb551; Tg551; Ts551
 ortb	Aufbewahrungsort	Tu551
 ortc	Charakteristischer Ort	Tp551
