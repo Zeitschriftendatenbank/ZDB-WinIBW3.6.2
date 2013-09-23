@@ -69,7 +69,7 @@ function onLoad()
 	//dies deaktivierte Feld zeige ich nur, um dem Anwender zu zeigen, dass bibliographische Daten 
 	//nicht bearbeitet werden können.
 	strEln = application.activeWindow.getVariable("libID");
-	if (strEln != "1999" && strEln != "2013"){
+	if (strEln != "8007" && strEln != "9001"){
 		document.getElementById("idCheckboxExemplar").checked = true;
 		document.getElementById("idCheckboxExemplar").disabled = true;
 	} else {
@@ -263,7 +263,7 @@ try{
 	Kat2 = document.getElementById("idKategorie2").value;
 	
 	//Kontrolle der libID:
-	if ((strEln != "1999" && strEln != "2013") && (testEbene(Kat1) == 0)){
+	if ((strEln != "8007" && strEln != "9001") && (testEbene(Kat1) == 0)){
 		var antwort2 = prompter.confirmEx("Suche / Ersetze", hinweisVZG + "\n\nAusnahme: Td- und Te-Sätze dürfen bearbeitet werden." + 
 			"\nWeitermachen?", "Ja", "Nein", "", "", "");
 		if (antwort2 == 1) { // 1 = nein
@@ -414,16 +414,13 @@ try{
 	}
 	
 	//Kontrolle der libID und Datensatzebene (hier nur einzufügende Kategorie):
-	// edited ZDB
-	/*
-	if ((strEln != "1999" && strEln != "2013") && (testEbene(wennKat) == 0 ||testEbene(dannKat) == 0)){
+	if ((strEln != "8007" && strEln != "9001") && (testEbene(wennKat) == 0 || testEbene(dannKat) == 0)){
 		var antwort2 = prompter.confirmEx("Suche / Ersetze", hinweisVZG + "\n\nAusnahme: Td- und Te-Sätze dürfen bearbeitet werden." + 
 			"\nWeitermachen?", "Ja", "Nein", "", "", "")
 		if (antwort2 == 1) { // 1 = nein
 			return;
 		}
 	}
-	*/
 	
 	lSetsize = application.activeWindow.getVariable("P3GSZ");
 	antwort = prompter.confirmEx("Ergänzen", "Suche Kategorie " + wennKat + " mit Text '" + wennText + "'" +
@@ -500,7 +497,7 @@ try{
 	}
 	
 	//Kontrolle der libID und Datensatzebene (hier nur einzufügende Kategorie):
-	if ((strEln != "1999" && strEln != "2013") && (testEbene(loescheKat) == 0)){
+	if ((strEln != "8007" && strEln != "9001") && (testEbene(loescheKat) == 0)){
 		var antwort2 = prompter.confirmEx("Suche / Ersetze", hinweisVZG + "\n\nAusnahme: Td- und Te-Sätze dürfen bearbeitet werden." + 
 			"\nWeitermachen?", "Ja", "Nein", "", "", "")
 		if (antwort2 == 1) { // 1 = nein
@@ -560,11 +557,10 @@ function bearbeiteEbene0und1(aktion)
 	
 	var strMat = application.activeWindow.materialCode;
 	strEln = application.activeWindow.getVariable("libID");
-	// edited ZDB
-	/*if ((strEln != "1999" && strEln != "2013") && (strMat != "Te" && strMat != "Td") && (strEbene != "1")){
+	if ((strEln != "8007" && strEln != "9001") && (strMat != "Te" && strMat != "Td") && (strEbene != "1")){
 		alert("Sie dürfen nur Td- und Te-Sätze bearbeiten.");
 		return;
-	}*/
+	}
 	
 	//alert("Bearbeite 0 oder 1 " + strKommando);
 	application.activeWindow.command(strKommando, false);

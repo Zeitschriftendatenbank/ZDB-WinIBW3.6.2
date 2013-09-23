@@ -194,7 +194,7 @@
 				<button label="Set bearbeiten" accesskey="b" oncommand="bearbeiteSetLoeschen();" />
 			</hbox>
 			<separator/>
-			<label value= "Diese Registerkarte ist nur für die ELN 1999 und 2013 sichtbar."/>
+			<label value= "Diese Registerkarte ist nur für die bestimmte ELN sichtbar."/>
 		</vbox>	
 	</tabpanel>
 	</tabpanels>
