@@ -647,8 +647,6 @@ function bearbeiteZeilenErsetzen()
 						}
 					} 
 				} else {
-					alert(strSuche);
-					alert(application.activeWindow.title.currentField);
 					while(application.activeWindow.title.find(strSuche, bcaseSensitive, true, bwholeWord) == true){
 						application.activeWindow.title.insertText(strErsetze);
 					}

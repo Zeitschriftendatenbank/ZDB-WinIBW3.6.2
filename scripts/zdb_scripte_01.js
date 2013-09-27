@@ -1,7 +1,5 @@
 // Datei:			zdb_scripte_01.js
-// Autor:			Johann Rolschewski, Wenke Röper, Carsten Klee (ZDB)
-// Ueberarbeitung: 	Karen Hachmann (GBV)
-// Test: 			Althaus (DNB), 28.08.2009, Update
+// WinIBW-Version ab 3.6
 
 var anfangsfenster;
 
@@ -544,14 +542,10 @@ function zdb_LokUrl() {
 
 }
 
-
-
-
-
 // =======================================================================
 // START ***** EZB *****
 // =======================================================================
-function __druckausgabe( dppn ) {
+function __druckausgabe( dppn, ld ) {
 
 	var arr = new Array();
 	var eppn = application.activeWindow.getVariable("P3GPP");
@@ -583,8 +577,9 @@ function __druckausgabe( dppn ) {
 			__zdbMSG("Sie sind nicht berechtigt, den Datensatz zu ändern.");
 			return "";
 		}
+		var insText = (ld == true) ? "Digital. Ausg." : "Online-Ausg.";
 		application.activeWindow.title.endOfBuffer(false);
-		application.activeWindow.title.insertText("4243 Online-Ausg.!" + eppn + "!\n"); // cs 23.07.2010
+		application.activeWindow.title.insertText("4243 "+insText+"!" + eppn + "!\n"); // cs 23.07.2010
 		//application.messageBox("EPPN", eppn, "alert-icon");
 			application.activeWindow.simulateIBWKey("FR");
 		//	Korrektur ausgeführt, dann ist der Titel im diagn. Format
@@ -612,109 +607,109 @@ function __druckausgabe( dppn ) {
 function __EZBNota(maske) {
 
 	var DDC_EZB = {
-		"000":["AK-AL","SQ-SU"],
-		"004":["SQ-SU"],
-		"010":["A"],
-		"020":["AN"],
-		"030":[""],
-		"050":["A"],
-		"060":["AK-AL"],
-		"070":["AP"],
-		"080":[""],
-		"090":[""],
-		"100":["CA-CI"],
-		"130":["A"],
-		"150":["CL-CZ"],
-		"200":["B"],
-		"220":["B"],
-		"230":["B"],
-		"290":["B"],
-		"300":["Q","MN-MS"],
-		"310":["Q"],
-		"320":["MA-MM"],
-		"330":["Q"],
+		"000"  :["AK-AL","SQ-SU"],
+		"004"  :["SQ-SU"],
+		"010"  :["A"],
+		"020"  :["AN"],
+		"030"  :[""],
+		"050"  :["A"],
+		"060"  :["AK-AL"],
+		"070"  :["AP"],
+		"080"  :[""],
+		"090"  :[""],
+		"100"  :["CA-CI"],
+		"130"  :["A"],
+		"150"  :["CL-CZ"],
+		"200"  :["B"],
+		"220"  :["B"],
+		"230"  :["B"],
+		"290"  :["B"],
+		"300"  :["Q","MN-MS"],
+		"310"  :["Q"],
+		"320"  :["MA-MM"],
+		"330"  :["Q"],
 		"333.7":["ZP"],
-		"340":["P"],
-		"350":["P"],
-		"355":["MA-MM"],
-		"360":["MN-MS","Q","A"],
-		"370":["AK-AL","D"],
-		"380":["Q","ZG"],
-		"390":["LA-LC"],
-		"400":["E"],
-		"420":["H"],
-		"430":["G"],
-		"439":["G"],
-		"440":["I"],
-		"450":["I"],
-		"460":["I"],
-		"470":["F"],
-		"480":["F"],
-		"490":["E"],
+		"340"  :["P"],
+		"350"  :["P"],
+		"355"  :["MA-MM"],
+		"360"  :["MN-MS","Q","A"],
+		"370"  :["AK-AL","D"],
+		"380"  :["Q","ZG"],
+		"390"  :["LA-LC"],
+		"400"  :["E"],
+		"420"  :["H"],
+		"430"  :["G"],
+		"439"  :["G"],
+		"440"  :["I"],
+		"450"  :["I"],
+		"460"  :["I"],
+		"470"  :["F"],
+		"480"  :["F"],
+		"490"  :["E"],
 		"491.8":["K"],
-		"500":["TA-TD"],
-		"510":["SA-SP"],
-		"520":["U"],
-		"530":["U"],
-		"540":["V"],
-		"550":["TE-TZ"],
-		"560":["TE-TZ"],
-		"570":["W"],
-		"580":["W"],
-		"590":["W"],
-		"600":["ZG"],
-		"610":["V","WW-YZ"],
-		"620":["ZL","ZN","ZP"],
+		"500"  :["TA-TD"],
+		"510"  :["SA-SP"],
+		"520"  :["U"],
+		"530"  :["U"],
+		"540"  :["V"],
+		"550"  :["TE-TZ"],
+		"560"  :["TE-TZ"],
+		"570"  :["W"],
+		"580"  :["W"],
+		"590"  :["W"],
+		"600"  :["ZG"],
+		"610"  :["V","WW-YZ"],
+		"620"  :["ZL","ZN","ZP"],
 		"621.3":["ZN"],
-		"624":["ZG","ZP"],
-		"630":["ZA-ZE","WW-YZ"],
-		"640":["ZA-ZE"],
-		"650":["Q"],
-		"660":["V","ZL"],
-		"670":["ZL"],
-		"690":["ZH-ZI"],
-		"700":["LH-LO"],
-		"710":["ZH-ZI"],
-		"720":["ZH-ZI"],
-		"730":["N"],
-		"740":["LH-LO"],
+		"624"  :["ZG","ZP"],
+		"630"  :["ZA-ZE","WW-YZ"],
+		"640"  :["ZA-ZE"],
+		"650"  :["Q"],
+		"660"  :["V","ZL"],
+		"670"  :["ZL"],
+		"690"  :["ZH-ZI"],
+		"700"  :["LH-LO"],
+		"710"  :["ZH-ZI"],
+		"720"  :["ZH-ZI"],
+		"730"  :["N"],
+		"740"  :["LH-LO"],
 		"741.5":["A"],
-		"750":["LH-LO"],
-		"760":["LH-LO"],
-		"770":["LH-LO"],
-		"780":["LP-LZ"],
-		"790":["A"],
-		"791":["LH-LO"],
-		"792":["A"],
-		"793":["ZX-ZY"],
-		"796":["ZX-ZY"],
-		"800":["E"],
-		"810":["H"],
-		"820":["H"],
-		"830":["G"],
-		"839":["G"],
-		"840":["I"],
-		"850":["I"],
-		"860":["I"],
-		"870":["F"],
-		"880":["F"],
-		"890":["K","E"],
+		"750"  :["LH-LO"],
+		"760"  :["LH-LO"],
+		"770"  :["LH-LO"],
+		"780"  :["LP-LZ"],
+		"790"  :["A"],
+		"791"  :["LH-LO"],
+		"792"  :["A"],
+		"793"  :["ZX-ZY"],
+		"796"  :["ZX-ZY"],
+		"800"  :["E"],
+		"810"  :["H"],
+		"820"  :["H"],
+		"830"  :["G"],
+		"839"  :["G"],
+		"840"  :["I"],
+		"850"  :["I"],
+		"860"  :["I"],
+		"870"  :["F"],
+		"880"  :["F"],
+		"890"  :["K","E"],
 		"891.8":["K"],
-		"900":["N"],
-		"910":["N","R"],
+		"900"  :["N"],
+		"910"  :["N","R"],
 		"914.3":["N"],
-		"920":["A","N"],
-		"930":["LD-LG"],
-		"940":["N"],
-		"943":["N"],
-		"950":["N"],
-		"960":["N"],
-		"970":["N"],
-		"980":["N"],
-		"990":["N"],
-		"B":[""],
-		"K":["A"],
-		"S":[""]
+		"920"  :["A","N"],
+		"930"  :["LD-LG"],
+		"940"  :["N"],
+		"943"  :["N"],
+		"950"  :["N"],
+		"960"  :["N"],
+		"970"  :["N"],
+		"980"  :["N"],
+		"990"  :["N"],
+		"B"    :[""],
+		"K"    :["A"],
+		"S"    :[""]
 	};
 	if (maske == "")		return ""; // brauchen wir das noch?
 
@@ -729,10 +724,10 @@ function __EZBNota(maske) {
 //=============
 function zdb_EZB() {
 
-	var arr = new Array();
+	var arr      = new Array();
 	var _ddcnota = new Array();
 	var _ezbnota = new Array();
-	var _ezb = new Array();
+	var _ezb     = new Array();
 	var satz;
 	var title, publisher, eissn, pissn, zdb_id, url;
 	var volume1;
@@ -743,7 +738,7 @@ function zdb_EZB() {
 
 
 //	url zur EZB
-	var dbformUrl="http://www.bibliothek.uni-regensburg.de/internal/ezeit/dbform.phtml?";
+	var dbformUrl = "http://www.bibliothek.uni-regensburg.de/internal/ezeit/dbform.phtml?";
 	var frontDoor = "http://www.bibliothek.uni-regensburg.de/ezeit/?";
 
 //	Dokumenttyp  8A: Vollanzeige, 7A: Kurzliste, MT: Fehler
@@ -770,14 +765,16 @@ function zdb_EZB() {
 		return false;
 	}
 
-	title = arr[0].substr(5);
-	idx = title.indexOf(" : ");
+	title                 = arr[0].substr(5);
+	idx                   = title.indexOf(" / ");
 	if (idx >= 0)	title = title.substr(0,idx);
-	idx = title.indexOf(" = ");
+	idx                   = title.indexOf(" : ");
 	if (idx >= 0)	title = title.substr(0,idx);
-	title = title.replace("[[Elektronische Ressource]]","");
-	title = title.replace("//","/");
-	idx = title.indexOf(" @");
+	idx                   = title.indexOf(" = ");
+	if (idx >= 0)	title = title.substr(0,idx);
+	title                 = title.replace("[[Elektronische Ressource]]","");
+	title                 = title.replace("//","/");
+	idx                   = title.indexOf(" @");
 	if (idx == 0)	title = title.substr(2);
 	else if (idx > 0) {
 		title = title.substr(idx+2) + ", " + title.substr(0,idx);
@@ -792,8 +789,8 @@ function zdb_EZB() {
 		title = title + arr[0];
 	}
 
-	title = title.replace("%","%25");
-	title = title.replace("&","%26");
+	//title = title.replace("%","%25");
+	//title = title.replace("&","%26");
 	//title = encodeURI(title);
 //---Feld "4030" , Inhalt nach publisher
 	arr = satz.match(/^4030 .*/gm);
@@ -801,9 +798,11 @@ function zdb_EZB() {
 		__zdbError("Verlagsort(e) und Verleger (4030) fehlen.");
 		return false;
 	}
-	publisher = arr[0].substr(5);
-	publisher = publisher.replace("%","%25");
-	publisher = publisher.replace("&","%26");
+	publisher                 = arr[0].substr(5);
+	idx                       = publisher.indexOf(" : ");
+	if (idx >= 0)	publisher = publisher.substr(idx+3,publisher.length);
+	//publisher = publisher.replace("%","%25");
+	//publisher = publisher.replace("&","%26");
 
 //---Feld "2010" , Inhalt nach eissn
 	eissn = "";
@@ -839,16 +838,16 @@ function zdb_EZB() {
 		return false;
 	}
 	url = url.substr(1);
-	url = url.replace("%","%25");
-	url = url.replace("&","%26");
+	//url = url.replace("%","%25");
+	//url = url.replace("&","%26");
 
 //---Feld "4025" , Inhalt nach volume1
 	volume1 = "";
 	arr = satz.match(/^4025 .*/gm);
 	if (arr != null) {
 		volume1 = arr[0].substr(5);
-		volume1 = volume1.replace("%","%25");
-		volume1 = volume1.replace("&","%26");
+		//volume1 = volume1.replace("%","%25");
+		//volume1 = volume1.replace("&","%26");
 	}
 
 //---Feld "5080" , Inhalt nach notation
@@ -875,8 +874,9 @@ function zdb_EZB() {
 	arr = satz.match(/^4243 Druckausg.[:]*!.*/gm);
 	if (arr != null) {
 		winsnap = application.windows.getWindowSnapshot();
-		arr[0] = arr[0].replace(/^4243 Druckausg.[:]*!([^!]*)!/,"$1");
-		pissn = __druckausgabe(arr[0]);
+		arr[0]  = arr[0].replace(/^4243 Druckausg.[:]*!([^!]*)!/,"$1");
+	    var ld  = (satz.match(/^0600 .*?ld/gm) != null) ? true : false; // code fuer layoutgetreue Digitalisierung?
+		pissn   = __druckausgabe(arr[0],ld);
 		application.windows.restoreWindowSnapshot(winsnap);
 	}
 
@@ -890,10 +890,10 @@ function zdb_EZB() {
 
 
 	EZB_satz =
-		"title="     + escape(title)   + "&publisher="  + escape(publisher)
-	+ "&eissn="      + eissn   + "&pissn="      + pissn
-	+ "&zdb_id="     + zdb_id  + "&url="        + escape(url)
-	+ "&volume1="    + escape(volume1);
+		"title="     + escape(title)  + "&publisher="  + escape(publisher)
+	                 + "&eissn="      + eissn   + "&pissn="      + pissn
+	                 + "&zdb_id="     + zdb_id  + "&url="        + escape(url)
+	                 + "&volume1="    + escape(volume1);
 	if(_ezbnota != null){
 		for(var i in _ezbnota){
 			EZB_satz += "&notation[]=" + _ezbnota[i];
