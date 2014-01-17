@@ -54,7 +54,7 @@ var strEbene = "";
 var strSatzart = "";
 var hinweisVZG = "Sie haben Kategorien der bibliographischen Ebene (Titelebene) ausgewählt. " +
 		"\nDas Bearbeiten ganzer Sets auf bibliographischer Ebene ist der Verbundzentrale vorbehalten."
-
+var hinweisAusnahme = "Ausnahme: Td-, Te- und Tw-Sätze dürfen bearbeitet werden";
 //Variable des Zufügen-Tabs:
 var wennKat = "";
 var wennText = "";
@@ -69,7 +69,8 @@ function onLoad()
 	//dies deaktivierte Feld zeige ich nur, um dem Anwender zu zeigen, dass bibliographische Daten 
 	//nicht bearbeitet werden können.
 	strEln = application.activeWindow.getVariable("libID");
-	if (strEln != "8007" && strEln != "9001"){
+	
+	if (strEln != ("8007" || "9001" || "9006")){
 		document.getElementById("idCheckboxExemplar").checked = true;
 		document.getElementById("idCheckboxExemplar").disabled = true;
 	} else {
@@ -263,8 +264,8 @@ try{
 	Kat2 = document.getElementById("idKategorie2").value;
 	
 	//Kontrolle der libID:
-	if ((strEln != "8007" && strEln != "9001") && (testEbene(Kat1) == 0)){
-		var antwort2 = prompter.confirmEx("Suche / Ersetze", hinweisVZG + "\n\nAusnahme: Td- und Te-Sätze dürfen bearbeitet werden." + 
+	if ((strEln != ("8007" || "9001" || "9006")) && (testEbene(Kat1) == 0)){
+		var antwort2 = prompter.confirmEx("Suche / Ersetze", hinweisVZG + "\n\n" + hinweisAusnahme + 
 			"\nWeitermachen?", "Ja", "Nein", "", "", "");
 		if (antwort2 == 1) { // 1 = nein
 			return;
@@ -414,8 +415,8 @@ try{
 	}
 	
 	//Kontrolle der libID und Datensatzebene (hier nur einzufügende Kategorie):
-	if ((strEln != "8007" && strEln != "9001") && (testEbene(wennKat) == 0 || testEbene(dannKat) == 0)){
-		var antwort2 = prompter.confirmEx("Suche / Ersetze", hinweisVZG + "\n\nAusnahme: Td- und Te-Sätze dürfen bearbeitet werden." + 
+	if ((strEln != ("8007" || "9001" || "9006")) && (testEbene(wennKat) == 0 || testEbene(dannKat) == 0)){
+		var antwort2 = prompter.confirmEx("Suche / Ersetze", hinweisVZG + "\n\n" + hinweisAusnahme + 
 			"\nWeitermachen?", "Ja", "Nein", "", "", "")
 		if (antwort2 == 1) { // 1 = nein
 			return;
@@ -497,8 +498,8 @@ try{
 	}
 	
 	//Kontrolle der libID und Datensatzebene (hier nur einzufügende Kategorie):
-	if ((strEln != "8007" && strEln != "9001") && (testEbene(loescheKat) == 0)){
-		var antwort2 = prompter.confirmEx("Suche / Ersetze", hinweisVZG + "\n\nAusnahme: Td- und Te-Sätze dürfen bearbeitet werden." + 
+	if ((strEln != ("8007" || "9001" || "9006")) && (testEbene(loescheKat) == 0)){
+		var antwort2 = prompter.confirmEx("Suche / Ersetze", hinweisVZG + "\n\n" + hinweisAusnahme + 
 			"\nWeitermachen?", "Ja", "Nein", "", "", "")
 		if (antwort2 == 1) { // 1 = nein
 			return;
@@ -557,7 +558,7 @@ function bearbeiteEbene0und1(aktion)
 	
 	var strMat = application.activeWindow.materialCode;
 	strEln = application.activeWindow.getVariable("libID");
-	if ((strEln != "8007" && strEln != "9001") && (strMat != "Te" && strMat != "Td") && (strEbene != "1")){
+	if ((strEln != ("8007" || "9001" || "9006")) && (strMat != "Te" && strMat != "Td" && strMat != "Tw") && (strEbene != "1")){
 		alert("Sie dürfen nur Td- und Te-Sätze bearbeiten.");
 		return;
 	}
@@ -568,6 +569,7 @@ function bearbeiteEbene0und1(aktion)
 	if (aktion == "ersetzen") bearbeiteZeilenErsetzen();
 	if (aktion == "zufuegen") bearbeiteZeilenZufuegen();
 	if (aktion == "loeschen") bearbeiteZeilenLoeschen();
+	
 	application.activeWindow.simulateIBWKey ("FR");
 	zaehleDatensaetze();
 	
@@ -623,7 +625,7 @@ function bearbeiteZeilenErsetzen()
 			{
 				bedingungInRange = true;
 			}
-			application.activeWindow.title.startOfBuffer(false);		
+			application.activeWindow.title.startOfBuffer(false);
 		}
 	} else {
 		bedingungInRange = true; // keine Bedingung
@@ -673,7 +675,7 @@ function bearbeiteZeilenZufuegen()
 	//den ganzen Datensatz und vergleicht die Kategorien mit den Vorgaben des Anwenders
 	//bei der find-Anweisung steht lineOnly immer auf true, weil jede Zeile einzeln
 	//untersucht werden soll
-	var zeilenNr, strTag, strInhalt;
+/*	var zeilenNr, strTag, strInhalt;
 	application.activeWindow.title.endOfBuffer(false);
 	var lZeilen = application.activeWindow.title.currentLineNumber;
 	application.activeWindow.title.startOfBuffer(false);
@@ -683,13 +685,28 @@ function bearbeiteZeilenZufuegen()
 		strTag = application.activeWindow.title.tag;
 		strInhalt = application.activeWindow.title.currentField;
 		strInhalt = strInhalt.substring(strTag.length);
-		//alert("Prüfung:\n" + strTag + ": " + (strTag == wennKat) + "\n" + strInhalt +"\n Pos: " + strInhalt.indexOf(wennText) );
+//alert("Prüfung:\n" + strTag + ": " + (strTag == wennKat) + "\n" + strInhalt +"\n Pos: " + strInhalt.indexOf(wennText) );
 		if (strTag == wennKat && strInhalt.indexOf(wennText) != -1){
 			application.activeWindow.title.endOfField(false);
 			application.activeWindow.title.insertText("\n" + dannKat + " " + dannText);
 		}
 		application.activeWindow.title.lineDown(1, false);
 		application.activeWindow.title.startOfField(false); 
+	}
+*/
+	
+	var strInhalt;
+	application.activeWindow.title.startOfBuffer(false);
+	var i = 0;
+	while( (strInhalt = application.activeWindow.title.findTag2(wennKat,i,false,true,true) ) != "" )
+	{
+		if(application.activeWindow.title.find(wennText,true,true,false))
+		{
+			application.activeWindow.title.endOfBuffer(false);
+			application.activeWindow.title.insertText("\n" + dannKat + " " + dannText);
+			break;
+		}
+		i++;
 	}
 	
 	return;

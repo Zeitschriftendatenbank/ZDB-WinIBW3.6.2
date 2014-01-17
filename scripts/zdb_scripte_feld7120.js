@@ -6,25 +6,29 @@
 // Das Script muss im Editierbildschirm aufgerufen werden im Feld 8032 oder 7121 oder 4025.
 // Das Feld 7120 (oder 4026) wird erzeugt und über dem Feld ausgegeben.
 // Unterfunktionen:
-// 	Feldauf7120()
-// 	Klammern7120()
-// 	Vor7120()
-// 	Bindestrich7120()
-// 	Tilde7120()
-// 	Punkt71204024()
-// 	Gleich7120()
-// 	Komma71204024()
-// 	Ziffer7120()
-// 	Musterjahr7120()
+// 	__Feldauf7120()
+// 	__Klammern7120()
+// 	__Vor7120()
+// 	__Bindestrich7120()
+// 	__Tilde7120()
+// 	__Punkt71204024()
+// 	__Gleich7120()
+// 	__Komma71204024()
+// 	__Ziffer7120()
+// 	__Musterjahr7120()
 // =======================================================================
 
 
 function zdb_Feld7120() {
+	__feld7120(true);
+}
 
+function __feld7120(display) {
 	// Edit-Bildschirm ? scr= IT, MT, IE, ME
 	var strScreen = application.activeWindow.getVariable("scr");
 	if (strScreen != "IE" && strScreen != "IT" && strScreen != "ME" && strScreen != "MT") {
 		application.messageBox("Feld7120", "Die Funktion muss aus dem Edit-Bildschirm für Titel oder Exemplare aufgerufen werden.", "alert-icon");
+		return;
 	} else {
 		// Globale Fehlervariable
 		fehlerin7120 = "";
@@ -46,9 +50,9 @@ function zdb_Feld7120() {
 		}
 		// Feldinhalt ermitteln
 		var inhalt8032 = feld8032.substring(5, feld8032.length);
-		var inhalt7120 = Feldauf7120(inhalt8032, feldnummer);
+		var inhalt7120 = __Feldauf7120(inhalt8032, feldnummer);
 		if (fehlerin7120 != "") {
-			application.messageBox("Feld7120", fehlerin7120, "alert-icon");
+			if(display) application.messageBox("Feld7120", fehlerin7120, "alert-icon");
 		}
 		// Feld ausgeben
 		application.activeWindow.title.startOfField(false);
@@ -60,7 +64,7 @@ function zdb_Feld7120() {
 }
 
 
-function Feldauf7120(inhalt8032, feldnummer) {
+function __Feldauf7120(inhalt8032, feldnummer) {
 
 	// '==================================================
 	// ' Auswertung von Heftnummern für Feld 4024
@@ -83,17 +87,17 @@ function Feldauf7120(inhalt8032, feldnummer) {
 	var inhalt7120 = "";
 
 	// Klammern und Rautezeichen (#) entfernen
-	hilfsfeld = Klammern7120(hilfsfeld);
+	hilfsfeld = __Klammern7120(hilfsfeld);
 
 	// Vortexte löschen
-	hilfsfeld = Vor7120(hilfsfeld);
+	hilfsfeld = __Vor7120(hilfsfeld);
 
 	// Ziffer, Punkt, Ziffer bzw. Ziffer Punkt Leerzeichen Ziffer wird ersetzt durch Ziffer*Ziffer 
 	hilfsfeld = hilfsfeld.replace(/([0-9])\.\s{0,1}([0-9])/g, "$1*$2");
 	// bzw. Ziffer Punkt Leerzeichen (Fall: Band.[?] -> Band. -> Band*) // cs 02.11.2010
 	//hilfsfeld = hilfsfeld.replace(/([0-9])\.\s{0,1}([0-9]){0,1}/g, "$1*$2");
 	// Bindestrich mit Leerzeichen durch ~ ersetzen
-	hilfsfeld = Bindestrich7120(hilfsfeld);
+	hilfsfeld = __Bindestrich7120(hilfsfeld);
 
 	// Leerzeichen und Texte entfernen
 	hilfsfeld = hilfsfeld.replace(/\s/g, "");
@@ -121,7 +125,7 @@ function Feldauf7120(inhalt8032, feldnummer) {
 
 	for (var i = 0; i < j; i++) {
 		feld[i] = hilfsfeld.substring(pos[i], pos[i+1] - 1);
-		temp_felder = Tilde7120(feld[i], "", "");
+		temp_felder = __Tilde7120(feld[i], "", "");
 		teil1 = temp_felder[0];
 		teil2 = temp_felder[1];
 		band1 = "";
@@ -130,12 +134,12 @@ function Feldauf7120(inhalt8032, feldnummer) {
 		band2 = "";
 		jahr2 = "";
 		heft2 = "";
-		temp_felder2 = Punkt71204024(teil1, band1, jahr1, heft1);
+		temp_felder2 = __Punkt71204024(teil1, band1, jahr1, heft1);
 		band1 = temp_felder2[0];
 		jahr1 = temp_felder2[1];
 		heft1 = temp_felder2[2];
 		if (teil2 != "-") {
-			temp_felder3 = Punkt71204024(teil2, band2, jahr2, heft2);
+			temp_felder3 = __Punkt71204024(teil2, band2, jahr2, heft2);
 			band2 = temp_felder3[0];
 			jahr2 = temp_felder3[1];
 			heft2 = temp_felder3[2];
@@ -193,7 +197,7 @@ function Feldauf7120(inhalt8032, feldnummer) {
 }
 
 
-function Klammern7120(feld) {
+function __Klammern7120(feld) {
 
 	var klammern7120 = feld;
 
@@ -222,7 +226,7 @@ function Klammern7120(feld) {
 }
 
 
-function Vor7120(feld) {
+function __Vor7120(feld) {
 
 	// Vom Anfang her alles vor 1. Ziffer löschen
 
@@ -240,7 +244,7 @@ function Vor7120(feld) {
 }
 
 
-function Bindestrich7120(feld) {
+function __Bindestrich7120(feld) {
 
 	// Bindestrich mit Leerzeichen durch ~ ersetzen
 
@@ -281,7 +285,7 @@ function Bindestrich7120(feld) {
 }
 
 
-function Tilde7120(feld, teil1, teil2) {
+function __Tilde7120(feld, teil1, teil2) {
 
 	// Unterfunktion zu Feld7120 -> Feldauf7120
 	// Aufgabe: Feld bei Tilde in Teil1 und Teil2 zerlegen
@@ -303,7 +307,7 @@ function Tilde7120(feld, teil1, teil2) {
 }
 
 
-function Punkt71204024(feld, band, jahr, heft) {
+function __Punkt71204024(feld, band, jahr, heft) {
 
 	// Unterfunktion zu Feld7120 -> Feldauf7120
 	// Aufgaben:
@@ -348,29 +352,29 @@ function Punkt71204024(feld, band, jahr, heft) {
 		}
 
 		if (band != "") {
-			band = Gleich7120(band);
+			band = __Gleich7120(band);
 		}
 		if (band != "") {
-			var temp = Komma71204024(band, heft);
+			var temp = __Komma71204024(band, heft);
 			band = temp[0];
 			heft = temp[1];
 		}
 		if (band != "") {
-			band = Ziffer7120(band);
+			band = __Ziffer7120(band);
 		}
 		if (jahr != "") {
-			jahr = Gleich7120(jahr);
+			jahr = __Gleich7120(jahr);
 		}
 		if (jahr != "") {
-			var temp = Komma71204024(jahr, heft);
+			var temp = __Komma71204024(jahr, heft);
 			jahr = temp[0];
 			heft = temp[1];
 		}
 		if (jahr != "") {
-			jahr = Ziffer7120(jahr);
+			jahr = __Ziffer7120(jahr);
 		}
 		if (heft != "") {
-			heft = Ziffer7120(heft);
+			heft = __Ziffer7120(heft);
 		}
 		if (band == "" && (isNaN(jahr.substring(0,4)) || jahr.length < 4)) {
 			band = jahr;
@@ -378,7 +382,7 @@ function Punkt71204024(feld, band, jahr, heft) {
 		}
 		// Prüfungen an den Zahlen
 		if (jahr != "") {
-			jahr = Musterjahr7120(jahr);
+			jahr = __Musterjahr7120(jahr);
 		}
 	}
 	var felder = new Array(band, jahr, heft);
@@ -388,7 +392,7 @@ function Punkt71204024(feld, band, jahr, heft) {
 }
 
 
-function Gleich7120(feld) {
+function __Gleich7120(feld) {
 
 	// Unterfunktion zu Feld7120 -> Feldauf7120 -> Punkt7120
 	// Aufgaben: Alles hinter Gleichheitszeichen bis Zeilenende entfernen
@@ -402,7 +406,7 @@ function Gleich7120(feld) {
 }
 
 
-function Komma71204024(feld, heft) {
+function __Komma71204024(feld, heft) {
 
 	// Unterfunktion zu Feld7120 -> Feldauf7120 -> Punkt7120
 	// Aufgaben: Feld bei Komma abschneiden
@@ -417,7 +421,7 @@ function Komma71204024(feld, heft) {
 }
 
 
-function Ziffer7120(feld) {
+function __Ziffer7120(feld) {
 
 	// Unterfunktion zu Feld7120 -> Feldauf7120 -> Punkt7120
 	// Aufgaben: Falsche Zeichen (~ *) entfernen
@@ -452,7 +456,7 @@ function Ziffer7120(feld) {
 }
 
 
-function Musterjahr7120(feld) {
+function __Musterjahr7120(feld) {
 
 	// Unterfunktion zu Feld7120 -> Feldauf7120 -> Punkt7120
 	// Aufgaben: verschiedene Zahlenprüfungen

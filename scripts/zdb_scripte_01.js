@@ -211,7 +211,10 @@ function zdb_DigiConfig() {
 }
 
 function zdb_Digitalisierung () {
-
+	__digitalisierung(false,true,"resource:/ttlcopy/zdb_titeldatenkopie_digi.ttl");
+}
+function __digitalisierung(digiConfig,showComment,copyFile) {
+	digiConfig = typeof digiConfig !== 'undefined' ? digiConfig : false;
 	// Prüfen ob Bildschirm = Trefferliste oder Vollanzeige
 	var strScreen = application.activeWindow.getVariable("scr");
 	if (strScreen != "7A" && strScreen != "8A") {
@@ -227,69 +230,114 @@ function zdb_Digitalisierung () {
 	}
 	
 	//-- open title
+	//application.activeWindow.command("k p", false);
 	application.activeWindow.command("k p", false);
 	
 	//--- vars we need
 	var feld4244 = new Array();
-	var subfield = "";
+	//var subfield = "";
 	var code = "";
 	var x = 0;
 	
 	//-- analyse and convert field 4244
-	while(application.activeWindow.title.findTag("039E", x, false, true, false) !== ""){
-			feld4244[x] = application.activeWindow.title.findTag("039E", x, false, true, false);
-			code = feld4244[x].match(/\$b./)[0][2];
-			//---switch the subfields
-			switch(feld4244[x].match(/\$b.\$./)[0][4]){
-				case "r" : feld4244[x] = "4244 " + code +"#{" + feld4244[x].match(/\$b.\$r(.*)/)[1] + "}";
-				break;
-				case "a" : feld4244[x] = "4244 " + code +"#{" + feld4244[x].match(/\$b.\$a(.*)\$9/)[1] + " ---> " + feld4244[x].match(/\$8--[A-Za-z]{4}--(.*)/)[1] + "}";
-				break;
-				default : feld4244[x] = "4244 " + code +"#{" + __zdbSwitchCode4244(code) + " ---> " + feld4244[x].match(/\$8--[A-Za-z]{4}--(.*)/)[1] + "}";
-				break;
-			}
-			x++;
+	while((feld4244[x] = application.activeWindow.title.findTag("039E", x, false, true, false)) !== ""){
+		//feld4244[x] = application.activeWindow.title.findTag("039E", x, false, true, false);
+		code = feld4244[x].match(/\$b./)[0][2];
+		//---switch the subfields
+		switch(feld4244[x].match(/\$b.\$./)[0][4]){
+			case "r" : feld4244[x] = "4244 " + code +"#{" + feld4244[x].match(/\$b.\$r(.*)/)[1] + "}";
+			break;
+			case "a" : feld4244[x] = "4244 " + code +"#{" + feld4244[x].match(/\$b.\$a(.*)\$9/)[1] + " ---> " + feld4244[x].match(/\$8--[A-Za-z]{4}--(.*)/)[1] + "}";
+			break;
+			default : feld4244[x] = "4244 " + code +"#{" + __zdbSwitchCode4244(code) + " ---> " + feld4244[x].match(/\$8--[A-Za-z]{4}--(.*)/)[1] + "}";
+			break;
+		}
+		x++;
 	}
+	
+	var felder424X = new Object();
+	felder424X[4241] = {p:"039B",kat:"4241",verbal:"",cont:""};
+	felder424X[4242] = {p:"039C",kat:"4242",verbal:"",cont:""};
+	felder424X[4243] = {p:"039D",kat:"4243",verbal:"",cont:""};
+	felder424X[4245] = {p:"039S",kat:"4245",verbal:"",cont:""};
+	for(var x in felder424X)
+	{
+		var i = 0;
+		while( ( felder424X[x].cont = application.activeWindow.title.findTag(felder424X[x].p, i, false, true, false) ) !== "")
+		{
+			var verbal;
+			var matches;
+			if(verbal = felder424X[x].cont.match(/\$r(.*)\$/))
+			{
+				felder424X[x].verbal = felder424X[x].kat + " " + verbal[1];
+			}
+			else
+			{
+				if(matches = felder424X[x].cont.match(/\$a(.*)\$9.*\$8--[A-Za-z]{4}--:.(.*)/))
+				{
+					felder424X[x].verbal =  felder424X[x].kat + " {" + matches[1] + " ---> " + matches[2] + "}";
+				}
+				else if(matches = felder424X[x].cont.match(/\$a(.*)\$9.*\$8--[A-Za-z]{4}--(.*)/))
+				{
+					felder424X[x].verbal =  felder424X[x].kat + " {" + matches[1] + " ---> " + matches[2] + "}";
+				}
+			}
+			i++;
+		}
+	}
+	
 	//-- close title and go back
 	zdb_Back();
 	
 
 	// Titelkopie auf zdb_titeldatenkopie_digi.ttl setzen
 	var titlecopyfileStandard = application.getProfileString("winibw.filelocation", "titlecopy", "");
-	application.activeWindow.titleCopyFile = "resource:/ttlcopy/zdb_titeldatenkopie_digi.ttl";
+	application.activeWindow.titleCopyFile = copyFile;
 	application.overwriteMode = false;
 	var idn = application.activeWindow.getVariable("P3GPP");
 	application.activeWindow.command("show d", false);
 
 	// Gespeicherte individuelle Angaben aus Datei DigiConfig.txt (sofern vorhanden) übernehmen
-	var digiConfig = new Array();
-	var fileInput = Components.classes["@oclcpica.nl/scriptinputfile;1"]
-						.createInstance(Components.interfaces.IInputTextFile);
-	if(fileInput.openSpecial("ProfD", "DigiConfig.txt")) {
-		var aLine = "";
-		while((aLine = fileInput.readLine()) != null) {
-			partOfLine = aLine.match(/([0-9]*)\s(.*)/);
-			digiConfig[partOfLine[1]] = partOfLine[2];
-			if (partOfLine[1] == "1101" && partOfLine[2] == "") {
-				digiConfig[partOfLine[1]] = "cr";
+	if(digiConfig == false)
+	{
+		var digiConfig = new Object();
+		var fileInput = Components.classes["@oclcpica.nl/scriptinputfile;1"].createInstance(Components.interfaces.IInputTextFile);
+		if(fileInput.openSpecial("ProfD", "DigiConfig.txt")) {
+			var aLine = "";
+			while((aLine = fileInput.readLine()) != null) {
+				partOfLine = aLine.match(/([0-9]*)\s(.*)/);
+
+				if (partOfLine[1] == "1101" && partOfLine[2] == "") {
+					digiConfig[partOfLine[1]] = {kat:partOfLine[1],cont:"cr"};
+				}
+				else if(partOfLine[1] == "4085")
+				{
+					digiConfig[partOfLine[1]] = {kat:partOfLine[1]+" =u ",cont:partOfLine[2]};
+				}
+				else
+				{
+					digiConfig[partOfLine[1]] = {kat:partOfLine[1], cont:partOfLine[2]};
+				}
+				
 			}
+			fileInput.close();
+		} else {
+			digiConfig[1101] = {kat:"1101 ",cont:"cr"};
+			digiConfig[1109] = {kat:"1109 ",cont:""};
+			digiConfig[2050] = {kat:"2050 ",cont:""};
+			digiConfig[4048] = {kat:"4048 =u ",cont:""};
+			digiConfig[4085] = {kat:"4085 ",cont:""};
+			digiConfig[4119] = {kat:"4119 ",cont:""};
+			digiConfig[4233] = {kat:"4233 ",cont:""};
+			digiConfig[4237] = {kat:"4237 ",cont:""};
+			digiConfig[4251] = {kat:"4251 ",cont:""};
 		}
-	} else {
-		digiConfig[1101] = "cr";
-		digiConfig[1109] = "";
-		digiConfig[2050] = "";
-		digiConfig[4048] = "";
-		digiConfig[4085] = "";
-		digiConfig[4119] = "";
-		digiConfig[4233] = "";
-		digiConfig[4237] = "";
-		digiConfig[4251] = "";
 	}
 
 	// Titelaufnahme kopieren und neue Titelaufnahme anlegen
 	application.activeWindow.copyTitle();
 	application.activeWindow.command("ein t", false);
-	application.activeWindow.title.insertText(" *** Titeldatenkopie Digitalisierung *** \n");
+	if(showComment != false) application.activeWindow.title.insertText(" *** Titeldatenkopie Digitalisierung *** \n");
 	application.activeWindow.pasteTitle();
     //Wiederherstellen des ursprünglichen Pfades der Titelkopie-Datei:
     application.activeWindow.titleCopyFile = titlecopyfileStandard;
@@ -329,62 +377,45 @@ function zdb_Digitalisierung () {
 		application.activeWindow.title.insertText("\n0600 ld;dm");
 	}
 
-	// Kategorie 1101: individuell gefüllt oder leer ausgeben
-	application.activeWindow.title.endOfBuffer(false);
-	application.activeWindow.title.insertText("1101 " + digiConfig[1101] + "\n");
-
-	// Kategorie 1109: individuell gefüllt oder leer ausgeben
-	application.activeWindow.title.endOfBuffer(false);
-	application.activeWindow.title.insertText("1109 " + digiConfig[1109] + "\n");
-
-	// Kategorie 2050: individuell gefüllt oder leer ausgeben
-	application.activeWindow.title.endOfBuffer(false);
-	application.activeWindow.title.insertText("2050 " + digiConfig[2050] + "\n");
-
-	// Kategorie 4048: individuell gefüllt oder leer ausgeben
-	application.activeWindow.title.endOfBuffer(false);
-	application.activeWindow.title.insertText("4048 " + digiConfig[4048] + "\n");
-
-	// Kategorie 4085: individuell gefüllt oder leer ausgeben
-	application.activeWindow.title.endOfBuffer(false);
-	application.activeWindow.title.insertText("4085 =u " + digiConfig[4085] + "\n");
-
-	// Kategorie 4119: individuell gefüllt oder leer ausgeben
-	application.activeWindow.title.endOfBuffer(false);
-	application.activeWindow.title.insertText("4119 " + digiConfig[4119] + "\n");
-
-	// Kategorie 4233: individuell gefüllt oder leer ausgeben
-	application.activeWindow.title.endOfBuffer(false);
-	application.activeWindow.title.insertText("4233 " + digiConfig[4233] + "\n");
-
-	// Kategorie 4237: individuell gefüllt oder leer ausgeben
-	application.activeWindow.title.endOfBuffer(false);
-	application.activeWindow.title.insertText("4237 " + digiConfig[4237] + "\n");
-
-	// Kategorie 4251: individuell gefüllt oder leer ausgeben
-	application.activeWindow.title.endOfBuffer(false);
-	application.activeWindow.title.insertText("4251 " + digiConfig[4251] + "\n");
-
+	for(var x in digiConfig)
+	{
+		application.activeWindow.title.endOfBuffer(false);
+		application.activeWindow.title.insertText(digiConfig[x].kat + digiConfig[x].cont + "\n");
+	}
 	// Kategorie 2010: Inhalt in 2013 ausgeben und löschen
-	var f2010 = application.activeWindow.title.findTag("2010", 0, false, true, true);
-	if (f2010 != "") {
+	var y = 0;
+	var f2010;
+	while( (f2010 = application.activeWindow.title.findTag("2010", y, false, true, true)) !="")
+	{
 		application.activeWindow.title.deleteLine(1);
 		application.activeWindow.title.insertText("2013 |p|" + f2010 + "\n");
 	}
 
 	__zdbEResource();
-
-	// Kategorie 4234: anlegen und mit Text "4243 Druckausg.![...IDN...]!" befüllen
-	application.activeWindow.title.endOfBuffer(false);
-	application.activeWindow.title.insertText("\n4243 Druckausg.!" + idn + "!");
 	
 	// Kategorie 4244: löschen und neu ausgeben
-	while(application.activeWindow.title.findTag("4244", 0, false, true, true) !== ""){
+	var y = 0;
+	while(application.activeWindow.title.findTag("4244", y, false, true, false) !== ""){
 		application.activeWindow.title.deleteLine(1);
+		y++;
 	}
+    application.activeWindow.title.endOfBuffer(false);
 	for(var num in feld4244){
 		application.activeWindow.title.insertText(feld4244[num] + "\n");
 	}
+	for(var rel in felder424X){
+		// Kategorien 424X: löschen und neu ausgeben
+		var i = 0;
+		while(application.activeWindow.title.findTag(felder424X[rel].kat, i, false, true, false) !== ""){
+			application.activeWindow.title.deleteLine(1);
+			i++;
+		}
+		if(felder424X[rel].verbal != "") application.activeWindow.title.insertText("\n" + felder424X[rel].verbal + "\n");
+	}
+	
+	// Kategorie 4234: anlegen und mit Text "4243 Druckausg.![...IDN...]!" befüllen
+	application.activeWindow.title.endOfBuffer(false);
+	application.activeWindow.title.insertText("\n4243 Druckausg.!" + idn + "!");
 	
 	// Kategorie 5080 bereinigen: nur DDC
 	__zdb5080();
