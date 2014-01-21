@@ -325,8 +325,8 @@ function __digitalisierung(digiConfig,showComment,copyFile) {
 			digiConfig[1101] = {kat:"1101 ",cont:"cr"};
 			digiConfig[1109] = {kat:"1109 ",cont:""};
 			digiConfig[2050] = {kat:"2050 ",cont:""};
-			digiConfig[4048] = {kat:"4048 =u ",cont:""};
-			digiConfig[4085] = {kat:"4085 ",cont:""};
+			digiConfig[4048] = {kat:"4048 ",cont:""};
+			digiConfig[4085] = {kat:"4085 =u ",cont:""};
 			digiConfig[4119] = {kat:"4119 ",cont:""};
 			digiConfig[4233] = {kat:"4233 ",cont:""};
 			digiConfig[4237] = {kat:"4237 ",cont:""};
