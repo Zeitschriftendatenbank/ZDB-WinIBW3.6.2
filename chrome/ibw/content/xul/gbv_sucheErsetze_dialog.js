@@ -70,7 +70,7 @@ function onLoad()
 	//nicht bearbeitet werden können.
 	strEln = application.activeWindow.getVariable("libID");
 	
-	if (strEln != ("8007" || "9001" || "9006")){
+	if (strEln != ("8007" || "9001" || "9006" || "9002")){
 		document.getElementById("idCheckboxExemplar").checked = true;
 		document.getElementById("idCheckboxExemplar").disabled = true;
 	} else {
@@ -264,7 +264,8 @@ try{
 	Kat2 = document.getElementById("idKategorie2").value;
 	
 	//Kontrolle der libID:
-	if ((strEln != ("8007" || "9001" || "9006")) && (testEbene(Kat1) == 0)){
+	//if ((strEln != ("8007" || "9001" || "9006" || "9002")) && (testEbene(Kat1) == "0")){
+	if (checkEln(strEln) && testEbene(Kat1) == "0"){
 		var antwort2 = prompter.confirmEx("Suche / Ersetze", hinweisVZG + "\n\n" + hinweisAusnahme + 
 			"\nWeitermachen?", "Ja", "Nein", "", "", "");
 		if (antwort2 == 1) { // 1 = nein
@@ -415,7 +416,7 @@ try{
 	}
 	
 	//Kontrolle der libID und Datensatzebene (hier nur einzufügende Kategorie):
-	if ((strEln != ("8007" || "9001" || "9006")) && (testEbene(wennKat) == 0 || testEbene(dannKat) == 0)){
+	if (checkEln(strEln) && (testEbene(wennKat) == "0" || testEbene(dannKat) == "0")){
 		var antwort2 = prompter.confirmEx("Suche / Ersetze", hinweisVZG + "\n\n" + hinweisAusnahme + 
 			"\nWeitermachen?", "Ja", "Nein", "", "", "")
 		if (antwort2 == 1) { // 1 = nein
@@ -498,7 +499,7 @@ try{
 	}
 	
 	//Kontrolle der libID und Datensatzebene (hier nur einzufügende Kategorie):
-	if ((strEln != ("8007" || "9001" || "9006")) && (testEbene(loescheKat) == 0)){
+	if (checkEln(strEln) && testEbene(loescheKat) == "0"){
 		var antwort2 = prompter.confirmEx("Suche / Ersetze", hinweisVZG + "\n\n" + hinweisAusnahme + 
 			"\nWeitermachen?", "Ja", "Nein", "", "", "")
 		if (antwort2 == 1) { // 1 = nein
@@ -558,8 +559,8 @@ function bearbeiteEbene0und1(aktion)
 	
 	var strMat = application.activeWindow.materialCode;
 	strEln = application.activeWindow.getVariable("libID");
-	if ((strEln != ("8007" || "9001" || "9006")) && (strMat != "Te" && strMat != "Td" && strMat != "Tw") && (strEbene != "1")){
-		alert("Sie dürfen nur Td- und Te-Sätze bearbeiten.");
+	if (checkEln(strEln) && (strMat != "Te" && strMat != "Td" && strMat != "Tw") && (strEbene != "1")){
+		alert("Sie dürfen nur Td-, Te- und Tw-Sätze bearbeiten.");
 		return;
 	}
 	
@@ -824,4 +825,14 @@ function resetAlles()
 	strfehlerMeldungen = "";
 	document.getElementById("idButtonDatei").hidden=true;
 	return;
+}
+
+function checkEln(eln)
+{
+    var allowed = new Array("8007","9001","9006","9002");
+    for(var x = 0; x < allowed.length; x++)
+    {
+        if(allowed[x] == eln) return false;
+    }
+    return true;
 }
