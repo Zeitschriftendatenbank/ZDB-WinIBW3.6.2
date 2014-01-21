@@ -37,14 +37,14 @@ function onAccept()
 	// The Accept button is pressed..
 	var account_input = document.getElementById("ZDB_EZB_Textbox1").value;
 	application.writeProfileString('zdb','ezb.account',account_input);
-	application.messageBox("EZBAccountDefinieren", "Der Account Name" + account_input + " wurde gespeichert.",  "message-icon");
+	application.messageBox("EZBAccountDefinieren", "Der Account Name \"" + account_input + "\" wurde gespeichert.",  "message-icon");
 	return true;
 }
 
 function onCancel()
 {
 	// The Cancel button is pressed..
-	// alert("Sie haben Abbrechen gewählt. Wirklich abbrechen?");
+	// alert("Sie haben Abbrechen gewÃ¤hlt. Wirklich abbrechen?");
 	return true;
 }
 
@@ -58,7 +58,7 @@ function onCancel()
 		<!--<separator/>-->
 		<vbox align="left" flex="1">
 			<description style="width: 30em;" flex="1">
-				Bitte geben Sie die BibID Ihres EZB-Accounts ein (Beispiel: ZBMED). Diese Angabe wird bei Verwendung des Skripts "ZDB_EZB" mit dem URL an die EZB �bergeben.
+				Bitte geben Sie die BibID Ihres EZB-Accounts ein (Beispiel: ZBMED). Diese Angabe wird bei Verwendung des Skripts "ZDB_EZB" mit dem URL an die EZB übergeben.
 			</description>
 			<separator/>
 			<textbox align="left" size="40" id="ZDB_EZB_Textbox1" value="" />

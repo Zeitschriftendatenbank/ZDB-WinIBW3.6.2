@@ -749,6 +749,22 @@ function __EZBNota(maske) {
 }
 
 
+function checkEZBAccount()
+{
+	if(application.getProfileString("zdb", "ezb.account", "") == "")
+	{
+		open_xul_dialog("chrome://ibw/content/xul/ZDB_EZBAccountDefinieren.xul", null);
+	}
+	var bibid = application.getProfileString("zdb", "ezb.account", "");
+	if(bibid != "")
+	{
+		return bibid;
+	}
+	else
+	{
+		return false;
+	}
+}
 //
 // ZDB-Funktionen > EZB
 //
@@ -766,7 +782,14 @@ function zdb_EZB() {
 	var idx, jdx;
 	var winsnap;
 	var EZB_satz;
+	var bibid = checkEZBAccount();
 
+	
+	if(!bibid)
+	{
+		__zdbError("Sie müssen ein gültige EZB-bibid angeben.");
+		return;
+	}
 
 //	url zur EZB
 	var dbformUrl = "http://www.bibliothek.uni-regensburg.de/internal/ezeit/dbform.phtml?";
@@ -931,6 +954,7 @@ function zdb_EZB() {
 		}
 	}
 	EZB_satz +=	"&charset=utf8";
+	EZB_satz +=	"&bibid="+bibid;
 	EZB_satz = EZB_satz.replace(/ /g,"%20");
 	application.shellExecute(dbformUrl+EZB_satz,5,"open","");
 //	4 bedeutet ja und nein; 6=ja 7=nein
