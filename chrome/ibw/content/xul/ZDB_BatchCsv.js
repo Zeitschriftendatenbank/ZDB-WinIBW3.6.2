@@ -9,8 +9,6 @@
 // Erstellt: ZDB, Carsten Klee
 //============================================================================
 
-var ww   = Components.classes["@mozilla.org/embedcomp/window-watcher;1"]
-					.getService(Components.interfaces.nsIWindowWatcher);
 var application = Components.classes["@oclcpica.nl/kitabapplication;1"]
 					.getService(Components.interfaces.IApplication);
 
@@ -22,17 +20,7 @@ const utility =
 	newFileInput: function() {
 		return Components.classes["@oclcpica.nl/scriptinputfile;1"]
 								.createInstance(Components.interfaces.IInputTextFile);
-	},
-
-     newFileOutput: function() {
-        return Components.classes["@oclcpica.nl/scriptoutputfile;1"]
-                                 .createInstance(Components.interfaces.IOutputTextFile);
-	},
-
-	newPrompter: function() {
-         return Components.classes["@oclcpica.nl/scriptpromptutility;1"]
-                                   .createInstance(Components.interfaces.IPromptUtilities);
-   }
+	}
 };
 
 

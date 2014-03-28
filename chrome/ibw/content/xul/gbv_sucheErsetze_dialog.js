@@ -70,7 +70,7 @@ function onLoad()
 	//nicht bearbeitet werden können.
 	strEln = application.activeWindow.getVariable("libID");
 	
-	if (checkEln(strEln)){
+	if (strEln != ("8007" || "9001" || "9006" || "9002")){
 		document.getElementById("idCheckboxExemplar").checked = true;
 		document.getElementById("idCheckboxExemplar").disabled = true;
 	} else {
