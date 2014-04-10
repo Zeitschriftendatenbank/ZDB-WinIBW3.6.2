@@ -95,3 +95,7 @@ images/
 components/
 wordlists/
 scripts/zdb_scripts_perUser.js
+defaults/pref/proxy_settings.js
+scripts/zdb_scripts_perUser.js
+winibw.txt
+ttlcopy/zdb_titeldatenkopie_digi_bsb.ttl

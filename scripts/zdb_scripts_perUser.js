@@ -558,9 +558,10 @@ function setBearbeiten()
 
 	var csv = new CSV();
 	//csv.__csvSetLogFilename("LOG_kat4244bsb.txt");
-	csv.__csvSetLogFilename("LOG_exloeschen00900467X.txt");
+	//csv.__csvSetLogFilename("LOG_exloeschen00900467X.txt");
+	csv.__csvSetLogFilename("LOG_ergERessource.txt");
 	// IDN der eigenen Bibliothek
-	csv.__csvSetEigeneBibliothek("00900467X");
+	//csv.__csvSetEigeneBibliothek("00900467X");
     
 	var setSize = application.activeWindow.getVariable("P3GSZ");
 
@@ -568,13 +569,66 @@ function setBearbeiten()
     do {
 
 		//__kat4244bsb(i,csv);
-        __setBearbeitenLokaldatenLoeschen(i,csv);
-
+        //__setBearbeitenLokaldatenLoeschen(i,csv);
+        __setBearbeitenUnterfeldErg(i,csv,"p","021A","$nElektronische Ressource");
         i++;
 
     } while (i <= setSize)
 
 }
+
+function __setBearbeitenUnterfeldErg(iterator,csv,format,feld,unterfeld)
+{
+    // edit record
+    try
+    {
+        application.activeWindow.command("k " + iterator + " " + format,false);
+        var idn = application.activeWindow.getVariable("P3GPP");
+    }
+    catch(e) 
+    {
+        csv.__csvLOG("\tDatensatz kann nicht geoeffnet werden.\nFehlermeldung: " + e);
+        return;
+    }
+    if (application.activeWindow.status != "ERROR")
+    {
+            var y = 0;
+            var cont;
+            var  ind, ind2;
+            while((application.activeWindow.title.findTag2(feld, y, true, true, false) != "") ){
+                cont = application.activeWindow.title.currentField;
+                ind = cont.indexOf("$d");
+                ind2 = cont.indexOf("$f");
+                ind3 = cont.indexOf("$h");
+                if(ind != -1)
+                {
+                    application.activeWindow.title.charRight(ind,false);
+                }
+                else if(ind2 != -1)
+                {
+                    application.activeWindow.title.charRight(ind2,false);
+                }
+                else if(ind3 != -1)
+                {
+                    application.activeWindow.title.charRight(ind3,false);
+                }
+                else
+                {
+                    application.activeWindow.title.endOfField(false);
+                }
+                // inert new field content
+                application.activeWindow.title.insertText(unterfeld);
+                y++;
+            }
+
+    //	save buffer
+        return csv.__csvSaveBuffer(true,"Ergaenzungen: " + y);
+
+    } else {
+        //	return undone but write error to a log file
+        return csv.__csvSaveBuffer(false,"\tDatensatz kann nicht geoeffnet werden. Status = ERROR.");
+    }
+} // end of method
 
 function __kat4244bsb(iterator,csv){
     	// edit record
@@ -796,4 +850,125 @@ function mailFernleih(){
     {
         csv.__csvError(e);
     }
+}
+
+function OSM(){
+    if (application.activeWindow.getVariable("scr") != "MI") {
+        __zdbError("Die Funktion kann nur im Korrekturmodus aufgerufen werden.");
+        return;
+    }
+    var iterator = 0;
+    var repl = false;
+    var feld371;
+    var prompter = utility.newPrompter();
+    while((feld371 = application.activeWindow.title.findTag2("371",iterator,true,true,false)) == "")
+    {
+        if(feld371.match(/\$2S/)) break;
+        iterator++;
+    }
+    if(feld371.match(/\$k|\$l/))
+    {
+        if(!prompter.confirm("OSM Koordinaten",
+        "In diesem Datensatz gibt es bereits Koordinaten. Sollen diese überschrieben werden?")) {
+            return false;
+        }
+        else{
+            repl = true;
+        }
+    }
+
+    var street = feld371.match(/371 ([^$]*)/);
+    var city = feld371.match(/\$b([^$]*)/);
+    var plz = feld371.match(/\$e([^$]*)/);
+    var adr = street[1]+" "+plz[1]+" "+city[1];
+	var msg,xmlrow,display_name,lat,lon;
+    var url = "http://nominatim.openstreetmap.org/search.php?q="
+    var format = "&format=xml";
+    var selected = false;
+
+    var xmlDoc = __zdbGetXML(url+encodeURIComponent(adr)+format);
+    /*if(!xmlDoc || xmlDoc == false) {
+        __zdbError("Keine OSM Daten für Adresse vorhanden");
+        return false;
+    }*/
+    var xmlrows = xmlDoc.getElementsByTagName("place");
+    if(xmlrows.length < 1)
+    {
+        while(xmlrows.length < 1)
+        {
+            if(prompter.prompt("OSM Koordinaten","Keine OSM-Daten für diese Adresse. Neuer Versuch mit geänderter Adresse?",adr,"",""))
+            {
+                adr = prompter.getEditValue();
+                xmlDoc = __zdbGetXML(url+encodeURIComponent(adr)+format);
+                xmlrows = xmlDoc.getElementsByTagName("place");
+                
+            }
+            else
+            {
+                return;
+            }
+        }
+    }
+    else
+    {
+        application.shellExecute(url+adr,5,"open","");
+    }
+    var xmlRowsCount = xmlrows.length;
+    var treffer = 0;
+    var latfull,lonfull,ind;
+    for(var r=0; r < xmlRowsCount; r++) {
+        xmlrow = xmlrows[r];
+        display_name = xmlrow.getAttribute("display_name");
+        latfull = xmlrow.getAttribute("lat");
+        ind = latfull.indexOf(".")+6;
+        lat = latfull.substr(0,ind);
+        lonfull = xmlrow.getAttribute("lon");
+        ind = lonfull.indexOf(".")+6;
+        lon = lonfull.substr(0,ind);
+        treffer++;
+        if(prompter.confirm("OSM Koordinaten",
+        "Sollen diese Koordinaten übernommen werden?\nTreffer: "+treffer+" von "+xmlRowsCount+"\nTitel: "+display_name+"\nLAT: "+lat+"\nLon: "+lon+"\n"+url+adr)) {
+            selected = true;
+            break;
+        }
+    }
+    if(!selected) return;
+    if(repl)
+    {
+        var re = /\$k[^$]*\$l[^$]*/;
+        var replacementpattern = "$k"+lon+"$l"+lat;
+        var result = feld371.replace(re, replacementpattern);
+        application.activeWindow.title.deleteLine(1);
+        application.activeWindow.title.insertText("\n"+result+"\n");
+    }
+    else
+    {
+        var subfields = new Array("$n","$o","$p","$z","$2","$3");
+        var ind;
+        for(var i = 0;i<subfields.length;i++)
+        {
+            ind = application.activeWindow.title.currentField.indexOf(subfields[i]);
+            if(ind != -1)
+            {
+                application.activeWindow.title.charRight(ind,false);
+                application.activeWindow.title.insertText("$k"+lon+"$l"+lat);
+                return;
+            }
+        }
+    }
+}
+
+
+function __zdbGetXML(url)
+{
+    try {
+        var req = Components.classes["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
+		req.open('GET', url, false);
+        req.setRequestHeader("Content-Type", "application/xml");
+		req.send(null);
+        return req.responseXML;
+    } catch(e) {
+        __zdbError("Exception: " + e);
+		return false;
+	}
 }

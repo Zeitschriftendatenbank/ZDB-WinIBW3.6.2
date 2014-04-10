@@ -485,6 +485,7 @@ letzte Änderung 2012-12-05  Klee
 	// Kommando abschicken und Ergebnis in gleichen Fenster anzeigen
 	application.activeWindow.command("f idn " + zielID[1], false); // <=== Kommando in demselben Fenster
 
+	  
     //Datensatz in der Vollanzeige prüfen. Wenn PPN noch nicht vorkommt, dann jetzt einfuegen:
     if (application.activeWindow.copyTitle().indexOf(quellID) == -1 ) 
 	{
@@ -498,7 +499,7 @@ letzte Änderung 2012-12-05  Klee
 			application.activeWindow.simulateIBWKey ("FR");
 			if (application.activeWindow.status == "OK")
 			{ 
-				application.activeWindow.command("f idn " + quellID + " or " + zielID[1] + ";s k", false);
+				application.activeWindow.command("f idn " + quellID + " or " + zielID[1] + ";s k", false);    
 			}
 		}
 	}
