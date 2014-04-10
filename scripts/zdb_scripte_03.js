@@ -15,7 +15,7 @@ function __enableUserScriptFile(){
 	}
 }
 
-function zdbFID(){
+function zdbFIDcsv(){
     const params = Components.classes["@mozilla.org/embedcomp/dialogparam;1"]
     .createInstance(Components.interfaces.nsIDialogParamBlock);
     params.SetNumberStrings(5);
@@ -72,7 +72,6 @@ function zdbFID(){
             application.activeWindow.command("sav " + tinumber,false);
             if(parallel = __zdbGetParallel())
             {
-            
                 for(var o in parallel)
                 {
                     application.activeWindow.command("f idn " + parallel[o].idn,false);
@@ -86,6 +85,50 @@ function zdbFID(){
         {
             var xulFeatures = "centerscreen, chrome, close, titlebar,modal=no,dependent=yes, dialog=yes";
             open_xul_dialog("chrome://ibw/content/xul/ZDB_excelFID_dialog.xul", xulFeatures,params);
+        }
+    }
+    else
+    {
+        prompter.alert("Abbruch","Habe Vorgang abgebrochen.")
+    }
+    
+}
+
+function zdbFIDset(){
+    var currentSet = application.activeWindow.getVariable("P3GSE");
+    var setSize = application.activeWindow.getVariable("P3GSZ");
+    var prompter = utility.newPrompter();
+    if(prompter.confirm("Set erstellen","Erstelle ein Set anhand des Sets " + currentSet + " mit " + setSize + " Titeln. Melde mich wieder, wenn ich fertig bin."))
+    {
+        application.activeWindow.command("del s0",false);
+        var parallel = new Array();
+        i = 1;
+        do {
+            
+            application.activeWindow.command("s s" + currentSet + " " + i,false);
+            var tinumber = application.activeWindow.getVariable("P3GTI");
+            application.activeWindow.command("sav " + tinumber,false);
+            if(parallel = __zdbGetParallel())
+            {
+                for(var o in parallel)
+                {
+                    application.activeWindow.command("f idn " + parallel[o].idn,false);
+                    var tinumber = application.activeWindow.getVariable("P3GTI");
+                    application.activeWindow.command("sav " + tinumber,false);
+                }
+            }
+            i++;
+            
+        } while (i <= setSize)
+        {
+
+        }
+        
+        
+        application.activeWindow.command("s s0",false);
+        if(prompter.confirm("Set erstellt","Fertig! Habe Set erstellt. Soll das Excel-Skript zum Download geöffnet werden?"))
+        {
+            open_xul_dialog("chrome://ibw/content/xul/ZDB_excelFID_dialog.xul");
         }
     }
     else
