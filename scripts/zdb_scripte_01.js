@@ -580,7 +580,6 @@ function zdb_LokUrl() {
     // Ausgangsbildschirm ermitteln
     var strScreen = application.activeWindow.getVariable("scr");
     if (strScreen == "8A") {
-        application.activeWindow.command("show d", false);
         open_xul_dialog("chrome://ibw/content/xul/ZDB_LokUrl.xul", null);
     } else {
         application.messageBox("LokURL", "Das Skript muss aus der Vollanzeige aufgerufen werden.", "alert-icon");

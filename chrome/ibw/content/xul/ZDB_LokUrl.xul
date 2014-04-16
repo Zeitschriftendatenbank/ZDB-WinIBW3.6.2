@@ -123,7 +123,7 @@ function onCancel()
 ]]>
 </script>
 
-<vbox id="boxi">
+<vbox id="boxi" flex="1" style="overflow:auto"  height="450">
 	<description>
 	</description>
 	<separator/>
