@@ -15,12 +15,13 @@ function __enableUserScriptFile(){
 	}
 }
 
-function zdbFIDcsv(){
+function zdbFIDcsv()
+{
     const params = Components.classes["@mozilla.org/embedcomp/dialogparam;1"]
     .createInstance(Components.interfaces.nsIDialogParamBlock);
     params.SetNumberStrings(5);
     params.SetString(0,"pa");
-    open_xul_dialog("chrome://ibw/content/xul/ZDB_FID.xul", null,params);
+    open_xul_dialog("chrome://ibw/content/xul/ZDB_FID_dialog.xul", null,params);
     // on cancel
     if(params.GetString(1) == "cancel") {
         return;
@@ -37,12 +38,12 @@ function zdbFIDcsv(){
     var zdbids = new Array();
     
     // load file object
-	var theFileInput = utility.newFileInput();
-	if (!theFileInput.open(file))
+    var theFileInput = utility.newFileInput();
+    if (!theFileInput.open(file))
     {
-        alert("Datei " + file + " wurde nicht gefunden.");
-        return false;
-	}
+      alert("Datei " + file + " wurde nicht gefunden.");
+      return false;
+    }
     var prompter = utility.newPrompter();
     if(prompter.confirm("Set erstellen","Erstelle ein Set anhand der Datei " + file+ ". Melde mich wieder, wenn ich fertig bin."))
     {
@@ -72,6 +73,7 @@ function zdbFIDcsv(){
             application.activeWindow.command("sav " + tinumber,false);
             if(parallel = __zdbGetParallel())
             {
+            
                 for(var o in parallel)
                 {
                     application.activeWindow.command("f idn " + parallel[o].idn,false);
@@ -98,6 +100,11 @@ function zdbFIDset(){
     var currentSet = application.activeWindow.getVariable("P3GSE");
     var setSize = application.activeWindow.getVariable("P3GSZ");
     var prompter = utility.newPrompter();
+    //Ergänzung GBV: Wenn in Set0 ausgeführt, wird das Exceltool aufgerufen.
+    if (currentSet == 0){
+        open_xul_dialog("chrome://ibw/content/xul/ZDB_excelFID_dialog.xul");
+        return;
+    }    
     if(prompter.confirm("Set erstellen","Erstelle ein Set anhand des Sets " + currentSet + " mit " + setSize + " Titeln. Melde mich wieder, wenn ich fertig bin."))
     {
         application.activeWindow.command("del s0",false);
@@ -120,10 +127,6 @@ function zdbFIDset(){
             i++;
             
         } while (i <= setSize)
-        {
-
-        }
-        
         
         application.activeWindow.command("s s0",false);
         if(prompter.confirm("Set erstellt","Fertig! Habe Set erstellt. Soll das Excel-Skript zum Download geöffnet werden?"))
@@ -136,6 +139,68 @@ function zdbFIDset(){
         prompter.alert("Abbruch","Habe Vorgang abgebrochen.")
     }
     
+}
+
+function __zdbGetParallel()
+{
+    var tag, content,regex,matches;
+    var contents = new Array();
+    var i = 0;
+    var vortext = /Online-Ausg|Druckaus/;
+    var parallel = new Object();
+
+    if("MT" == application.activeWindow.getVariable("scr"))
+    {
+        if(application.activeWindow.getVariable("P3GDB").match(/P|PA/i))
+        {
+            tag = "039D";
+            regex =  /\$a([^\u0192]*)\$9([^\$]*)/;
+        }
+        else if(application.activeWindow.getVariable("P3GDB").match(/D|DA/i))
+        {
+            tag = "4243";
+            regex = /([^!]*)!([^!]*)/;
+        }
+        while((content = application.activeWindow.title.findTag(tag,i,false,false,false)) != "")
+        {
+            contents[i] = content;
+            content = "";
+            i++;
+        }
+    }
+    else if("8A" == application.activeWindow.getVariable("scr"))
+    {
+        if(application.activeWindow.getVariable("P3GDL").match(/P|PA/i))
+        {
+            tag = "039D";
+            regex = /\u0192a([^\u0192]*)\u01929([^\u0192]*)/;
+        }
+        else if(application.activeWindow.getVariable("P3GDL").match(/D|DA/i))
+        {
+            tag = "4243";
+            regex = /([^!]*)!([^!]*)/;
+        }
+        while((content = application.activeWindow.findTagContent(tag,i,false)) != "")
+        {
+            contents[i] = content;
+            content = "";
+            i++;
+        }
+    }
+    else
+    {
+        return false;
+    }
+    
+    for(var x = 0; x < contents.length; x++)
+    {
+        if(vortext.test(contents[x]))
+        {
+            matches = regex.exec(contents[x]);
+            parallel[x] = {votext:matches[1],idn:matches[2]};
+        }
+    }
+    return (parallel[0]) ? parallel : false;
 }
 
 function csvBatchTitel()

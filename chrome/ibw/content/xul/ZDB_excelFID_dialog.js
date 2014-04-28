@@ -1,3 +1,23 @@
+//============================================================================
+/* gbv_excelTabelle_dialog.js
+ Erstellt: als Scriptdatei: Jürgen Schneider, HEBIS
+ Anpassungen für GBV, Karen Hachmann 
+    alles in einem XUL-Formular untergebracht.
+    Pfad 'Listen' wird angelegt, wenn noch nicht vorhanden
+    Jede Datei bekommt automatisch einen Namen (Datum und Uhrzeit).
+ ***************************************************************************
+ GBV: zahlreiche Änderungen:
+      writeCSV in Dialogformular übertragen
+      04.2013: Anwender können selbst auswählen, welche Trennzeichen
+               verwendet werden sollen, wenn ein Feld wiederholbar ist.
+               Habe "; " durch strTrennzeichen ersetzt
+ ***************************************************************************
+ ZDB: Wiederholte Felder und Unterfelder
+ - Funktionen createResult(), convertText überarbeitet
+ - angepasst getMaxOccurrence --> radix hinzugefügt
+*/
+//============================================================================
+
 var application = Components.classes["@oclcpica.nl/kitabapplication;1"]
 					.getService(Components.interfaces.IApplication);
 
