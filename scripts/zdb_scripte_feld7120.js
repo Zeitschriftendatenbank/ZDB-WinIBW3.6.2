@@ -89,8 +89,8 @@ function __Feldauf7120(inhalt8032, feldnummer) {
     // '   Punkt7120 --> Punkt71204024
     // '==================================================
 
-    pos = new Array();
-    feld = new Array();
+    var pos = new Array();
+    var feld = new Array();
     var temp_felder = new Array();
     var temp_felder2 = new Array();
     var temp_felder3 = new Array();
@@ -98,8 +98,10 @@ function __Feldauf7120(inhalt8032, feldnummer) {
     var teil2;
     var band1;
     var jahr1;
+    var heft1;
     var band2;
     var jahr2;
+    var heft2;
     var hilfsfeld = inhalt8032;
     var inhalt7120 = "";
 
@@ -446,7 +448,7 @@ function __Ziffer7120(feld) {
     var falschezeichen = "";
     var zeich = "";
     var ziffern7120 = "";
-    for (i = 0; i < feld.length; i++) {
+    for (var i = 0; i < feld.length; i++) {
         zeich = feld.substring(i, i + 1);
         if (zeich == "~") {
             zeich = "-";

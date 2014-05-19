@@ -96,11 +96,11 @@ function zdb_merkeZDB() {
 function __zdbSwitchCode4244(code) {
     var text = "";
     switch(code){
-        case "f" : text = "Vorg. ";
+        case "f" : text = "Vorg.";
         break;
-        case "s" : text = "Forts. ";
+        case "s" : text = "Forts.";
         break;
-        case "z" : text = "Vorg. u. Forts. ";
+        case "z" : text = "Vorg. u. Forts.";
         break;
     }
     return text;
