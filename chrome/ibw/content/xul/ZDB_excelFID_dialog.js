@@ -805,17 +805,25 @@ function handleRecord ( satz, ctrl ) {
         if (/209B\/.*?x32/.test(tmp_satz) == true)
         {
             var arr8032 = tmp_satz.match(/209B\/.*?x32/);
-            var arr8032LastChar = arr8032[0].match(/(.)\u0192x32/)// Unterfeldzeichen "ƒ" = \u0192
-            if (arr8032LastChar[1] == "-")
+//__M("8032: "+arr8032[0]);
+            //var arr8032LastChar = arr8032[0].match(/(.)\u0192x32/)// Unterfeldzeichen "ƒ" = \u0192
+            if(arr8032[0].match(/(-\s?)\u0192x32/))// Unterfeldzeichen "ƒ" = \u0192
+//__M("8032 last Char: "+arr8032LastChar);
+            //if (arr8032LastChar[1] == "-")
             {
+//__M("8032 last Char: "+arr8032LastChar[1]);
                 tmp_line = handleRecordPart(tmp_satz,false,ctrl,x);
                 if (tmp_line != "") {
                     lineblock += tmp_line + "\n";
                 }
             }
         }
+        else
+        {
+            //__M('kein laufender Bestand');
+        }
 	}
-//alert("lineblock: " + lineblock);
+//__M("lineblock: " + lineblock);
 		lineblock = lineblock.replace(/\n$/,"");
 	
 	return lineblock;
@@ -896,14 +904,14 @@ function handleRecordPart ( satz, accept, ctrl, exit ) {
         idx = satz.indexOf("\n203@");
         //__M("idx:"+idx);
         if (idx < 0) {
-            //alert(idx + "\n" + satz);
+//__M(idx + "\n" + satz);
             line += "\t";
         } else {
             str7800 = satz.substr(idx+11, satz.length);//bis Rest des Exemplares
             //__M("str7800\n" + str7800);
             str7800 = str7800.substring(0, str7800.indexOf("\n")); //bis Zeilenende
             line += '"' + str7800 + '"\t';
-            //__M(line);
+//__M(line);
         }
 
     idx = -1
