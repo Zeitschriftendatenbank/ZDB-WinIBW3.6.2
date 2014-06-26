@@ -221,7 +221,7 @@ function __expansionUF(expansion)
         expansion = expansion.replace(/\$\$/, "\$");
     }
     expansion = expansion.replace(/\$b/, " / ");
-    expansion = expansion.replace(/(.*)\$g([^:]*)(.*)/, "$1 <$2>$3");
+    expansion = expansion.replace(/(.*)\$[gcn]([^:]*)(.*)/, "$1 <$2>$3");
     return expansion;
 }
 function __digitalisierung(digiConfig,showComment,copyFile) {
@@ -291,14 +291,18 @@ function __digitalisierung(digiConfig,showComment,copyFile) {
             }
             else
             {
-                if(matches = felder424X[x].cont.match(/\$a(.*)\$9.*\$8--[A-Za-z]{4}--:.(.*)/))
+                if(matches = felder424X[x].cont.match(/\$a(.*)\$9.*\$8--[A-Za-z]{4}--:.(.*)|\$a(.*)\$9.*\$8--[A-Za-z]{4}--(.*)/))
                 {
-                    felder424X[x].verbal =  felder424X[x].kat + " {" + matches[1] + " ---> " + __expansionUF(matches[2]) + "}";
+                    if("039S" == felder424X[x].p)
+                    {
+                        felder424X[x].verbal =  felder424X[x].kat + " {" + matches[1] + " \"" + __expansionUF(matches[2]) + "\"}";
+                    }
+                    else
+                    {
+                        felder424X[x].verbal =  felder424X[x].kat + " {" + matches[1] + " ---> " + __expansionUF(matches[2]) + "}";
+                    }
                 }
-                else if(matches = felder424X[x].cont.match(/\$a(.*)\$9.*\$8--[A-Za-z]{4}--(.*)/))
-                {
-                    felder424X[x].verbal =  felder424X[x].kat + " {" + matches[1] + " ---> " + __expansionUF(matches[2]) + "}";
-                }
+                
             }
             i++;
         }
