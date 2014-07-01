@@ -76,7 +76,7 @@ pref("winibw.diacritics.description.66", "Halbkreis übergesetzt");
 pref("winibw.diacritics.description.67", "Punkt übergesetzt");
 pref("winibw.diacritics.description.68", "Punkte für Umlaute");
 pref("winibw.diacritics.description.69", "Hacek (Caron)");
-pref("winibw.diacritics.description.70", "Gradzeichen / Ringel übergesetzt");
+pref("winibw.diacritics.description.70", "Ringel übergesetzt");
 pref("winibw.diacritics.description.71", "Doppelbogen 1. Teil/links");
 pref("winibw.diacritics.description.72", "Doppelbogen 2. Teil/rechts");
 pref("winibw.diacritics.description.73", "Komma als Akzent oben");
