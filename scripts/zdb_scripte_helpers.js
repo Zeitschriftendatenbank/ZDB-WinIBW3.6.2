@@ -452,3 +452,30 @@ function __zeigeEigenschaften(object){
 		}
 	}
 }
+
+/**
+ * zählt Exemplardatensätze
+ * 
+ * @return int|null
+ */ 
+function __exemplareAnzahl()
+{
+    var strTitle =  application.activeWindow.copyTitle();
+    var regexpExe = /\n(70[0-9][0-9])/g;
+    var alleExe = new Array();
+    alleExe = strTitle.match(regexpExe);
+    //application.messageBox("", alleExe.length, "message-icon");
+    return (!alleExe) ? null : alleExe.length;
+}
+
+/**
+* iteriert durch Exemplare und ruft für jedes Exemplar eine Funktion auf
+*/
+function __iterateExemplare(callback)
+{
+    var exCount = __exemplareAnzahl();
+    for(var i = 1; i <= exCount; i++)
+    {
+        callback(i);
+    }
+}

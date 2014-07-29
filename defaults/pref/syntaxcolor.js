@@ -27,7 +27,8 @@ pref("ibw.presentation.syntaxcolor.D.format.6", '<span style="font-weight:bold;c
 pref("ibw.presentation.syntaxcolor.D.regex.7", '(\$u</[sS][pP][aA][nN]>)(http.*?)(<)');
 pref("ibw.presentation.syntaxcolor.D.format.7", '$1<a href="$2">$2</a>$3');
 // 8. 7135 Link
-pref("ibw.presentation.syntaxcolor.D.regex.8", "(7135.*=u )(http.*?)((<)|(=x ))");
+//pref("ibw.presentation.syntaxcolor.D.regex.8", "(7135.*=u )(http.*?)((<)|(=x ))");
+pref("ibw.presentation.syntaxcolor.D.regex.8", "(7135.*?=u\s)(https?\:\/\/.*?)(=x\s.*?<|<)");
 pref("ibw.presentation.syntaxcolor.D.format.8", '$1<a href="$2">$2</a>$3');
 // 9. Istgleich-Subfelder in Rot
 //pref("ibw.presentation.syntaxcolor.D.regex.9", "(=[a-z0-9]{1}\s)");
@@ -55,7 +56,8 @@ pref("ibw.presentation.syntaxcolor.DA.format.5", '$1<span>$2</span>');
 pref("ibw.presentation.syntaxcolor.DA.regex.7", '(\$u</[sS][pP][aA][nN]>)(http.*?)(<)');
 pref("ibw.presentation.syntaxcolor.DA.format.7", '$1<a href="$2">$2</a>$3');
 // 8. 7135 Link
-pref("ibw.presentation.syntaxcolor.DA.regex.8", "(7135.*=u )(http.*?)((<)|(=x ))");
+//pref("ibw.presentation.syntaxcolor.DA.regex.8", "(7135.*=u )(http.*?)((<)|(=x ))");
+pref("ibw.presentation.syntaxcolor.DA.regex.8", "(7135.*?=u\s)(https?\:\/\/.*?)(=x\s.*?<|<)");
 pref("ibw.presentation.syntaxcolor.DA.format.8", '$1<a href="$2">$2</a>$3');
 // 9. Istgleich-Subfelder in Rot
 //pref("ibw.presentation.syntaxcolor.DA.regex.9", "(=[a-z0-9]+ )");
