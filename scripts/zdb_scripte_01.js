@@ -270,7 +270,7 @@ function __digitalisierung(digiConfig,showComment,copyFile) {
                 
         x++;
     }
-    
+
     var felder424X = new Object();
     felder424X[4241] = {p:"039B",kat:"4241",verbal:"",cont:""};
     felder424X[4242] = {p:"039C",kat:"4242",verbal:"",cont:""};
@@ -291,7 +291,7 @@ function __digitalisierung(digiConfig,showComment,copyFile) {
             }
             else
             {
-                if(matches = felder424X[x].cont.match(/\$a(.*)\$9.*\$8--[A-Za-z]{4}--:.(.*)|\$a(.*)\$9.*\$8--[A-Za-z]{4}--(.*)/))
+                if(matches = felder424X[x].cont.match(/\$a(.*)\$9.*\$8--[A-Za-z]{4}--:?\s?(.*)/))
                 {
                     if("039S" == felder424X[x].p)
                     {
