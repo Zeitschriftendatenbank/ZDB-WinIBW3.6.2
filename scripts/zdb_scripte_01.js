@@ -212,6 +212,7 @@ function zdb_DigiConfig() {
 
 function zdb_Digitalisierung () {
     __digitalisierung(false,true,"resource:/ttlcopy/zdb_titeldatenkopie_digi.ttl");
+    //__digitalisierung(false,true,"resource:/ttlcopy/zdb_titeldatenkopie_digi_bsb.ttl");
 }
 
 function __expansionUF(expansion)
@@ -262,9 +263,9 @@ function __digitalisierung(digiConfig,showComment,copyFile) {
         switch(feld4244[x].match(/\$b.\$./)[0][4]){
             case "r" : feld4244[x] = "4244 " + code +"#{" + feld4244[x].match(/\$b.\$r(.*)/)[1] + "}";
             break;
-            case "a" : feld4244[x] = "4244 " + code +"#{" + feld4244[x].match(/\$b.\$a(.*)\$9/)[1] + " ---> " + __expansionUF(feld4244[x].match(/\$8--[A-Za-z]{4}--:?\s?(.*)/)[1]) + "}";
+            case "a" : feld4244[x] = "4244 " + code +"#{" + feld4244[x].match(/\$b.\$a(.*)\$9/)[1] + " ---> " + __expansionUF(feld4244[x].match(/\$8--[A-Za-z]{4}--\s?:?\s?(?:--T..--\s)?(.*)/)[1]) + "}";
             break;
-            default : feld4244[x] = "4244 " + code +"#{" + __zdbSwitchCode4244(code) + " ---> " + __expansionUF(feld4244[x].match(/\$8--[A-Za-z]{4}--:?\s?(.*)/)[1]) + "}";
+            default : feld4244[x] = "4244 " + code +"#{" + __zdbSwitchCode4244(code) + " ---> " + __expansionUF(feld4244[x].match(/\$8--[A-Za-z]{4}--\s?:?\s?(?:--T..--\s)?(.*)/)[1]) + "}";
             break;
         }
                 
@@ -291,7 +292,7 @@ function __digitalisierung(digiConfig,showComment,copyFile) {
             }
             else
             {
-                if(matches = felder424X[x].cont.match(/\$a(.*)\$9.*\$8--[A-Za-z]{4}--:?\s?(.*)/))
+                if(matches = felder424X[x].cont.match(/\$a(.*)\$9.*\$8--A[A-Za-z]{3}--\s?:?\s?(?:--T..--\s)?(.*)/))
                 {
                     if("039S" == felder424X[x].p)
                     {
@@ -307,7 +308,6 @@ function __digitalisierung(digiConfig,showComment,copyFile) {
             i++;
         }
     }
-    
     //-- close title and go back
     zdb_Back();
     

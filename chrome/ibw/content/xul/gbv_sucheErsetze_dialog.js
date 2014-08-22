@@ -617,6 +617,8 @@ function bearbeiteZeilenErsetzen()
 	var lZeilen = application.activeWindow.title.currentLineNumber;
 	application.activeWindow.title.startOfBuffer(false);
 	var bedingungInRange;
+    var matches;
+    var re = new RegExp(strSuche,"i");
 	if (strbedingung2 != "")
 	{
 		var bedingungInRange = false;
@@ -639,10 +641,15 @@ function bearbeiteZeilenErsetzen()
 		if (strTag >= Kat1 && strTag <= Kat2){
 			if(bedingungInRange)
 			{
+                if(matches = application.activeWindow.title.currentField.match(re))
+                {
+                    strSuche = matches[0];
+                }
 				if (strbedingung != "")
 				{				
 					if (application.activeWindow.title.find(strbedingung, bcaseSensitive, true, bwholeWord) == true)
 					{
+
 						application.activeWindow.title.startOfField(false);//Suche ab Zeilenanfang:
 						while(application.activeWindow.title.find(strSuche, bcaseSensitive, true, bwholeWord) == true)
 						{
