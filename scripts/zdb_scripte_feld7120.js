@@ -103,6 +103,10 @@ function __Feldauf7120(inhalt8032, feldnummer) {
     var hilfsfeld = inhalt8032;
     var inhalt7120 = "";
 
+    // alle parallelzählungen entfernen
+    hilfsfeld = hilfsfeld.replace(/(=.*?);/g,";");
+    hilfsfeld = hilfsfeld.replace(/(=.*?)$/,"");
+    
     // Klammern und Rautezeichen (#) entfernen
     hilfsfeld = __Klammern7120(hilfsfeld);
 
@@ -165,8 +169,8 @@ function __Feldauf7120(inhalt8032, feldnummer) {
             inhalt7120 = inhalt7120 + "; ";
         }
 
-        //if (feldnummer == "7120") {
-        // Feld 7120 aufbauen
+        if (feldnummer == "7120") {
+            // Feld 7120 aufbauen
             if (band1 != "") {
                 inhalt7120 = inhalt7120 + "\/v" + band1;
             }
@@ -179,33 +183,33 @@ function __Feldauf7120(inhalt8032, feldnummer) {
             if (jahr2 != "") {
                 inhalt7120 = inhalt7120 + "\/E" + jahr2;
             }
-        //} else {
-        // Feld 4024 aufbauen
-        /*	if (heft1 != "") {
+        } else {
+            // Feld 4024 aufbauen
+            if (band1 != "") {
+                inhalt7120 = inhalt7120 + "\/v" + band1;
+            }
+            if (heft1 != "") {
                 inhalt7120 = inhalt7120 + "\/a" + heft1;
             }
             if (jahr1 != "") {
                 inhalt7120 = inhalt7120 + "\/b" + jahr1;
             }
-            else if (band1 != "") {
-                inhalt7120 = inhalt7120 + "\/v" + band1;
-            }
 
+            if (band2 != "") {
+                inhalt7120 = inhalt7120 + "\/V" + band2;
+            }
             if (heft2 != "") {
                 inhalt7120 = inhalt7120 + "\/A" + heft2;
             }
             if (jahr2 != "") {
                 inhalt7120 = inhalt7120 + "\/E" + jahr2;
             }
-            else if (band2 != "") {
-                inhalt7120 = inhalt7120 + "\/V" + band2;
-            }
         }
-        */
+    }
         if (teil2 == "-") {
             inhalt7120 = inhalt7120 + "-";
         }
-    }
+    
     return inhalt7120;
 
     //inhalt7120 = hilfsfeld
@@ -325,7 +329,6 @@ function __Tilde7120(feld, teil1, teil2) {
 
 
 function __Punkt71204024(feld, band, jahr, heft) {
-
     // Unterfunktion zu Feld7120 -> Feldauf7120
     // Aufgaben:
     //	- Entfernen von "zu", "F.", "S.", "Ser.", "Trim." mit jeweils zugehörigem Vortext
@@ -393,6 +396,7 @@ function __Punkt71204024(feld, band, jahr, heft) {
         if (heft != "") {
             heft = __Ziffer7120(heft);
         }
+
         if (band == "" && (isNaN(jahr.substring(0,4)) || jahr.length < 4)) {
             band = jahr;
             jahr = "";
