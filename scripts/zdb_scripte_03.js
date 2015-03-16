@@ -141,68 +141,6 @@ function zdbFIDset(){
     
 }
 
-function __zdbGetParallel()
-{
-    var tag, content,regex,matches;
-    var contents = new Array();
-    var i = 0;
-    var vortext = /Online-Ausg|Druckaus/;
-    var parallel = new Object();
-
-    if("MT" == application.activeWindow.getVariable("scr"))
-    {
-        if(application.activeWindow.getVariable("P3GDB").match(/P|PA/i))
-        {
-            tag = "039D";
-            regex =  /\$a([^\u0192]*)\$9([^\$]*)/;
-        }
-        else if(application.activeWindow.getVariable("P3GDB").match(/D|DA/i))
-        {
-            tag = "4243";
-            regex = /([^!]*)!([^!]*)/;
-        }
-        while((content = application.activeWindow.title.findTag(tag,i,false,false,false)) != "")
-        {
-            contents[i] = content;
-            content = "";
-            i++;
-        }
-    }
-    else if("8A" == application.activeWindow.getVariable("scr"))
-    {
-        if(application.activeWindow.getVariable("P3GDL").match(/P|PA/i))
-        {
-            tag = "039D";
-            regex = /\u0192a([^\u0192]*)\u01929([^\u0192]*)/;
-        }
-        else if(application.activeWindow.getVariable("P3GDL").match(/D|DA/i))
-        {
-            tag = "4243";
-            regex = /([^!]*)!([^!]*)/;
-        }
-        while((content = application.activeWindow.findTagContent(tag,i,false)) != "")
-        {
-            contents[i] = content;
-            content = "";
-            i++;
-        }
-    }
-    else
-    {
-        return false;
-    }
-    
-    for(var x = 0; x < contents.length; x++)
-    {
-        if(vortext.test(contents[x]))
-        {
-            matches = regex.exec(contents[x]);
-            parallel[x] = {votext:matches[1],idn:matches[2]};
-        }
-    }
-    return (parallel[0]) ? parallel : false;
-}
-
 function csvBatchTitel()
 {
 	var csv = new CSV();
