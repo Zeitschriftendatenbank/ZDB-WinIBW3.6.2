@@ -1,8 +1,82 @@
-var fehlerin7120 = "";
-function zdb_Feld7120(inhalt8032,feldnummer) {
+// Datei:           zdb_scripte_feld7120.js
+// Autor:           Johann Rolschewski, Wenke Röper, Carsten Klee (ZDB)
+// =======================================================================
+// START ***** FELD 7120 *****
+// =======================================================================
+// Das Script muss im Editierbildschirm aufgerufen werden im Feld 8032 oder 7121 oder 4025.
+// Das Feld 7120 (oder 4026) wird erzeugt und über dem Feld ausgegeben.
+// Unterfunktionen:
+//  __Feldauf7120()
+//  __Klammern7120()
+//  __Vor7120()
+//  __Bindestrich7120()
+//  __Tilde7120()
+//  __Punkt71204024()
+//  __Gleich7120()
+//  __Komma71204024()
+//  __Ziffer7120()
+//  __Musterjahr7120()
+// =======================================================================
+
+
+function zdb_Feld7120() {
+    __feld7120(true,true,false);
+}
+
+function __feld7120(displayError,write,direct) {
+    // Edit-Bildschirm ? scr= IT, MT, IE, ME
+    var strScreen = application.activeWindow.getVariable("scr");
+    if (strScreen != "IE" && strScreen != "IT" && strScreen != "ME" && strScreen != "MT") {
+        application.messageBox("Feld7120", "Die Funktion muss aus dem Edit-Bildschirm für Titel oder Exemplare aufgerufen werden.", "alert-icon");
+        return;
+    } else {
+        // Globale Fehlervariable
         fehlerin7120 = "";
-        var inhalt7120 = __Feldauf7120(inhalt8032,feldnummer);
-        return new Array(inhalt7120,fehlerin7120);
+        var inhalt8032;
+        var feldnummer;
+        if(false == direct) // lese aktuelles Feld
+        {
+            // Feld markieren, in dem der Cursor steht
+            application.activeWindow.title.startOfField(false);
+            application.activeWindow.title.endOfField(true);
+            var feld8032 = application.activeWindow.title.selection;
+            // Feldnummer ermitteln
+            feldnummer = feld8032.substring(0, 4);
+            // In Abhängigkeit der Feldnummer, wird festgelegt, welches Feld zu erzeugen ist (7120 oder 4025)
+            if (feldnummer == "8032" || feldnummer == "7121") {
+                feldnummer = "7120";
+            } else if (feldnummer == "4025") {
+                feldnummer = "4024";
+            } else {
+            // Skriptabbruch, falls Aufruf aus falschem Feld erfolgt
+                application.messageBox("Feld7120", "Die Funktion darf nicht für das Feld " + feldnummer + " aufgerufen werden.", "alert-icon");
+                return;
+            }
+        }
+        else // nehme direkten input
+        {
+            feld8032 = direct;
+            feldnummer = feld8032.substring(0, 4);
+        }
+        // Feldinhalt ermitteln
+        var inhalt8032 = feld8032.substring(5, feld8032.length);
+        var inhalt7120 = __Feldauf7120(inhalt8032, feldnummer);
+        if (fehlerin7120 != "") {
+            if(displayError) application.messageBox("Feld7120", fehlerin7120, "alert-icon");
+        }
+        if(write)
+        {
+            // Feld ausgeben
+            application.activeWindow.title.startOfField(false);
+            application.activeWindow.title.insertText("\n");
+            application.activeWindow.title.lineUp(1, false);
+            application.activeWindow.title.insertText(feldnummer + " " + inhalt7120);
+        }
+        else
+        {
+            return inhalt7120;
+        }
+    }
 
 }
 
@@ -28,15 +102,7 @@ function __Feldauf7120(inhalt8032, feldnummer) {
     var jahr2;
     var hilfsfeld = inhalt8032;
     var inhalt7120 = "";
-    
-    // abschneiden von abschließenden Kommentar
-    // zdb.[1.]1912 - [5.]1916; 6.1917 - 55.1966; 1967 -   ; auch mit durchgehender Nr.-Zählung -> [1.]1912 - [5.]1916; 6.1917 - 55.1966; 1967 -
-    var lastColonIndex = hilfsfeld.lastIndexOf(';');
-    var lastPart = hilfsfeld.substring(lastColonIndex,hilfsfeld.length);
-    if(!lastPart.match(/\d/))
-    {
-        hilfsfeld = hilfsfeld.substring(0,lastColonIndex);
-    }
+
     // Klammern und Rautezeichen (#) entfernen
     hilfsfeld = __Klammern7120(hilfsfeld);
 
@@ -100,7 +166,7 @@ function __Feldauf7120(inhalt8032, feldnummer) {
         }
 
         if (feldnummer == "7120") {
-            // Feld 7120 aufbauen
+        // Feld 7120 aufbauen
             if (band1 != "") {
                 inhalt7120 = inhalt7120 + "\/v" + band1;
             }
@@ -114,32 +180,32 @@ function __Feldauf7120(inhalt8032, feldnummer) {
                 inhalt7120 = inhalt7120 + "\/E" + jahr2;
             }
         } else {
-            // Feld 4024 aufbauen
-            if (band1 != "") {
-                inhalt7120 = inhalt7120 + "\/v" + band1;
-            }
-            if (heft1 != "") {
+        // Feld 4024 aufbauen
+          if (heft1 != "") {
                 inhalt7120 = inhalt7120 + "\/a" + heft1;
             }
             if (jahr1 != "") {
                 inhalt7120 = inhalt7120 + "\/b" + jahr1;
             }
-
-            if (band2 != "") {
-                inhalt7120 = inhalt7120 + "\/V" + band2;
+            else if (band1 != "") {
+                inhalt7120 = inhalt7120 + "\/v" + band1;
             }
+
             if (heft2 != "") {
                 inhalt7120 = inhalt7120 + "\/A" + heft2;
             }
             if (jahr2 != "") {
                 inhalt7120 = inhalt7120 + "\/E" + jahr2;
             }
+            else if (band2 != "") {
+                inhalt7120 = inhalt7120 + "\/V" + band2;
+            }
         }
-    }
+        
         if (teil2 == "-") {
             inhalt7120 = inhalt7120 + "-";
         }
-    
+    }
     return inhalt7120;
 
     //inhalt7120 = hilfsfeld
@@ -214,7 +280,7 @@ function __Bindestrich7120(feld) {
         if (zeichen == ";") {
             kommada = false;
         }
-        if (zeichen == "," || zeichen == '=') {
+        if (zeichen == ",") {
             kommada = true;
         }
         if (zeichen == "-" && kommada == false) {
@@ -259,10 +325,11 @@ function __Tilde7120(feld, teil1, teil2) {
 
 
 function __Punkt71204024(feld, band, jahr, heft) {
+
     // Unterfunktion zu Feld7120 -> Feldauf7120
     // Aufgaben:
-    //	- Entfernen von "zu", "F.", "S.", "Ser.", "Trim." mit jeweils zugehörigem Vortext
-    //	- Teilen und speichern von Band und Jahr in einzelnen variablen
+    //  - Entfernen von "zu", "F.", "S.", "Ser.", "Trim." mit jeweils zugehörigem Vortext
+    //  - Teilen und speichern von Band und Jahr in einzelnen variablen
 
     var len = feld.length;
     if (feld == "") {
@@ -326,7 +393,6 @@ function __Punkt71204024(feld, band, jahr, heft) {
         if (heft != "") {
             heft = __Ziffer7120(heft);
         }
-
         if (band == "" && (isNaN(jahr.substring(0,4)) || jahr.length < 4)) {
             band = jahr;
             jahr = "";
@@ -337,6 +403,7 @@ function __Punkt71204024(feld, band, jahr, heft) {
         }
     }
     var felder = new Array(band, jahr, heft);
+
     return felder;
 
 }
@@ -388,7 +455,9 @@ function __Ziffer7120(feld) {
             zeich = ".";
         }
         if (isNaN(zeich)) {
-            if (zeich == "/" && i > 0) {
+            //if (zeich == "/" && i > 0) {
+            // edit: z.B. 1-4/5; vorher 4/5; jetzt 1-4/5
+            if (zeich.match(/[\/\-]/) && i > 0) {
                 ziffern7120 = ziffern7120 + zeich;
             } else {
                 falschezeichen = falschezeichen + zeich;
@@ -399,8 +468,9 @@ function __Ziffer7120(feld) {
         }
     }
     if (falschezeichen != "") {
-        fehlerin7120 = fehlerin7120 + "Ungültige Zeichen werden weggelassen: " + falschezeichen + "; ";
+        fehlerin7120 = fehlerin7120 + "Ungültige Zeichen werden weggelassen: " + falschezeichen + "\n";
     }
+
     return ziffern7120;
 
 }
@@ -416,8 +486,12 @@ function __Musterjahr7120(feld) {
     var suche = /\d{4}\/\d{4}|\d{4}\/\d{2}|\d{4}\/\d{1}|\d{4}/;
     var ergebnis = suche.exec(musterjahr);
     if (ergebnis == null || (feld.length == 8 || feld.length > 9)) {
-        fehlerin7120 = fehlerin7120 + "Falsche Jahreszahl wird weggelassen: " + musterjahr + ";";
+        fehlerin7120 = fehlerin7120 + "Falsche Jahreszahl wird weggelassen: " + musterjahr + "\n";
         musterjahr = "";
     }
     return musterjahr;
 }
+
+// =======================================================================
+// ENDE ***** FELD 7120 *****
+// =======================================================================
