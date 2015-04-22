@@ -78,6 +78,8 @@ var directory;
 var bContentsChanged;
 var auswahlDatei; //Standardkonfigurationstabelle oder eigeneAuswahl
 var strTrennzeichen;
+var delimiter = '$'; // Unterfeldzeichen "ƒ" = \u0192
+var charCode = 36; // Unterfeldzeichen "ƒ" = 402, Unterfeldzeichen "$" = 36
 
 //----------------------------------------------------------------------------
 
@@ -535,7 +537,7 @@ function getTagInfos ( ctrl, tmpline ) {
 	}
 
 	if (tmpline.charAt(4) == "x") {
-		ctrl.xsbf = String.fromCharCode(402) + tmpline.substr(4,3);
+		ctrl.xsbf = String.fromCharCode(charCode) + tmpline.substr(4,3);
 		tmpline = tmpline.substr(0,4) + tmpline.substr(7);
 	} else {
 		ctrl.xsbf = "";
@@ -645,7 +647,7 @@ function sbfPart ( obj, tmpline ) {
 	//__M("sbfPart:"+tmpline);
 	if (tmpline.charAt(0) == "$") {
 		field.pre = "";
-		field.sbf = String.fromCharCode(402) + tmpline.charAt(1);
+		field.sbf = String.fromCharCode(charCode) + tmpline.charAt(1);
 		field.post = ""
 		tmpline = tmpline.substr(2);
 	} else if (tmpline.charAt(0) == "\"") {
@@ -665,7 +667,7 @@ function sbfPart ( obj, tmpline ) {
 			field.pre = tmp.substr(0,idx);
 			tmp = tmp.substr(idx);
 		}
-		field.sbf = String.fromCharCode(402) + tmp.charAt(1);
+		field.sbf = String.fromCharCode(charCode) + tmp.charAt(1);
 		field.post = tmp.substr(2);
 	} else { 
 		return null;
@@ -807,7 +809,7 @@ function handleRecord ( satz, ctrl ) {
             var arr8032 = tmp_satz.match(/209B\/.*?x32/);
 //__M("8032: "+arr8032[0]);
             //var arr8032LastChar = arr8032[0].match(/(.)\u0192x32/)// Unterfeldzeichen "ƒ" = \u0192
-            if(arr8032[0].match(/(-\s?)\u0192x32/))// Unterfeldzeichen "ƒ" = \u0192
+            if(arr8032[0].match(/(-\s?)\$x32/))// Unterfeldzeichen "ƒ" = \u0192
 //__M("8032 last Char: "+arr8032LastChar);
             //if (arr8032LastChar[1] == "-")
             {
@@ -969,10 +971,10 @@ function createResult ( satz, ctrl,exit ) {
 			if (ctrl[idx].tag == "031N" || ctrl[idx].tag == "231@")
 			{
 				// nur wenn Unterfeld $0 vorkommt
-				if(satz.indexOf(String.fromCharCode(402)+"0") != -1)
+				if(satz.indexOf(String.fromCharCode(charCode)+"0") != -1)
 				{
 					// teile zeile anhand von $0 (Semikolon)
-					text = group[0].split(String.fromCharCode(402)+"0 ");
+					text = group[0].split(String.fromCharCode(charCode)+"0 ");
 					// konvertiere jeden Teilstring
 					for(var p = 0; p < text.length; p++){
 						tempArray[p] = convertOrText(text[p],ctrl[idx].spec,ctrl[idx].data);
@@ -1077,7 +1079,7 @@ function convertText ( text, spec, andArr ) {
 			if(jdxa != jdxl)
 			{
 				while(test == false){			
-					jdxe = text.indexOf(String.fromCharCode(402),jdxa+1);
+					jdxe = text.indexOf(String.fromCharCode(charCode),jdxa+1);
 					if (jdxe < 0)	jdxe = text.length;
 					tmp = andArr[idx].pre + text.substr(jdxa+2,jdxe-jdxa-2) + andArr[idx].post;
 					tmpArray.push(tmp);
@@ -1088,7 +1090,7 @@ function convertText ( text, spec, andArr ) {
 			}
 			else
 			{
-				jdxe = text.indexOf(String.fromCharCode(402),jdxa+1);
+				jdxe = text.indexOf(String.fromCharCode(charCode),jdxa+1);
 				if (jdxe < 0)	jdxe = text.length;
 				tmp += andArr[idx].pre + text.substr(jdxa+2,jdxe-jdxa-2) + andArr[idx].post;
 			}
