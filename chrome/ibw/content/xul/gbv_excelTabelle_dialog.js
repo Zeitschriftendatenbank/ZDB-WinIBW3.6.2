@@ -965,11 +965,10 @@ function createResult ( satz, ctrl ) {
 		// handelt es sich um ein tag mit subfield?
 		//suche = "("+tag+".+)"+ctrl[idx].xsbf;
 		suche = tag+".+"+ctrl[idx].xsbf;
-        //alert(suche);
+        suche = suche.replace('\$','\\$'); // edit zdb unescaped $ is bad in regex
 		regex = new RegExp(suche, "g");
-
 		group = satz.match(regex);
-	
+        
 		if(group)
 		{
 			var tempArray = new Array();
@@ -1019,7 +1018,6 @@ function createResult ( satz, ctrl ) {
 
 	}
 
-	//__M("retval:"+retval);
 	return;
 }
 

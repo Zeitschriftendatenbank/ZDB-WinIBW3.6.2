@@ -1,6 +1,6 @@
 /*	Datei:	zdb_gbv_public.js
 	Autor:	Karen Hachmann, GBV
-	edited	ZDB 2013
+	edited	ZDB 2015
 	Datum:	2006
 */
 
@@ -127,8 +127,16 @@ function __formatD()
 	if (application.activeWindow.getVariable("P3GPR") != "D") {
 		application.activeWindow.command ("\\too d", false);
 	}
-
 }
+function __formatP()
+{
+	//Präsentationsformat prüfen und auf "D" umstellen
+	if (application.activeWindow.getVariable("P3GPR") != "P") {
+		application.activeWindow.command ("\\too p", false);
+	}
+}
+
+
 
 function ZETA()
 {
@@ -256,14 +264,14 @@ function kategorieAnalysePlus(zeile, strFeld)
 {
 	/*
 	Erhält einzelne Zeilen und ermittelt den Inhalt des Unterfeldes
-	u192 = $
+	\u192 = ƒ
 	*/
 	var analysePlus = "";
-	var lPos1 = zeile.indexOf("\u0192" + strFeld);
+	var lPos1 = zeile.indexOf("$" + strFeld);
 	
 	if (lPos1 != -1) {
 		analysePlus = zeile.substring(lPos1+2);
-		var lPos2 = analysePlus.indexOf("\u0192"); //Beginn des nächsten Unterfeldes
+		var lPos2 = analysePlus.indexOf("$"); //Beginn des nächsten Unterfeldes
 		if (lPos2 != -1){ 
 			analysePlus = analysePlus.substring(0, lPos2);
 		}
@@ -271,36 +279,52 @@ function kategorieAnalysePlus(zeile, strFeld)
 	return analysePlus;
 }
 
-function kategorienLoeschen(kategorien)
+function kategorienLoeschen(regexKategorien)
 {
 	//Ersatz für title.ttl in Sonderfällen:
-	//Beispiel Funktionsaufruf: (Alle) Kategorie(n) in einem gemeinsamen String:
-	//kategorienLoeschen("2150|4201|4730|4731|5060|5065|5545|5587|5588|5589");
-	//Aus dem eingehenden Parameter wird ein Array gebildet:
-	kategorien = kategorien.split("|");
-	//im Titleedit-Schirm: jedes Vorkommnis jeder im Array befindlichen Kategorie wird gelöscht 
-	for (var i = 0; i < kategorien.length; i++){
-		while (application.activeWindow.title.findTag(kategorien[i], 0, true, true, false) != ""){
-			application.activeWindow.title.deleteLine(1);
+	//Beispiel Funktionsaufruf: übergeben werden reguläre Ausdrücke, z.B.
+	//kategorienLoeschen(/2150|4201|4730|4731|5060|5065|5545|5587|5588|5589/);
+	
+	var n= 0;
+	var letzteZeile;
+
+	//wieviele Zeilen sollen geprüft werden?
+	application.activeWindow.title.endOfBuffer (false);
+	letzteZeile = application.activeWindow.title.currentLineNumber;
+	application.activeWindow.title.startOfBuffer (false);
+	
+	for (n=0; n<= letzteZeile; n++) {
+		if (regexKategorien.test(application.activeWindow.title.tag)){
+
+
+
+
+			application.activeWindow.title.deleteLine (1);
+		} else {
+			application.activeWindow.title.endOfField(false);//wichtig bei mehrzeiligen Inhalten!
+			application.activeWindow.title.lineDown (1, false);
 		}
 	}
 }
 
-function kategorienSammeln(kategorien){
-	var i, n;
+function kategorienSammeln(regexKategorien){
+	//Beispiel Funktionsaufruf: übergeben werden reguläre Ausdrücke, z.B.
+	//kategorienSammeln(/2275|2276|2277/);
+	var n= 0;
+	var dieZeile, letzteZeile;
+
 	var rueckgabe = "";
-	var strSuche = "";
-	kategorien = kategorien.split("|");
-	//im Titleedit-Schirm: jedes Vorkommnis jeder im Array befindlichen Kategorie wird gesucht
-	for (i = 0; i < kategorien.length; i++){
-		n = 0;
-		do {
-			strSuche = application.activeWindow.title.findTag(kategorien[i], n, true, true, false);
-			if (strSuche != "") {
-				rueckgabe = rueckgabe + "\n" + strSuche;
-			}
-			n++;
-		} while (strSuche != "")
+	application.activeWindow.title.endOfBuffer(false);
+	letzteZeile = application.activeWindow.title.currentLineNumber;
+	application.activeWindow.title.startOfBuffer(false);
+
+	for (n=0; n<= letzteZeile; n++) {
+		dieZeile = application.activeWindow.title.currentField;
+		if(regexKategorien.test(application.activeWindow.title.tag) == true){
+			rueckgabe = rueckgabe + "\n" + dieZeile;
+		}
+		application.activeWindow.title.endOfField(false);//wichtig bei mehrzeiligen Inhalten!
+		application.activeWindow.title.lineDown (1, false);
 	}
 	return rueckgabe;
 }
@@ -392,7 +416,7 @@ function __datumUhrzeit()
 function __loescheIdentnummern()
 {
 	var n= 0;
-	var letzteZeile, strKategorie;
+	var letzteZeile;
 	//lösche alles außer 2000: d.h. 200x, 20xx, 2xxx
 	var regExpIdentnummer = /200[1-9]|20[1-9][0-9]|2[1-9][0-9][0-9]/;
 
@@ -402,8 +426,7 @@ function __loescheIdentnummern()
 	application.activeWindow.title.startOfBuffer (false);
 	
 	for (n=0; n<= letzteZeile; n++) {
-		strKategorie = application.activeWindow.title.tag;
-		if (regExpIdentnummer.test(strKategorie)){
+		if (regExpIdentnummer.test(application.activeWindow.title.tag)){
 			application.activeWindow.title.deleteLine (1);
 		} else {
 			application.activeWindow.title.endOfField(false);//wichtig bei mehrzeiligen Inhalten!
@@ -508,17 +531,6 @@ function __fensterWechsel()
 	return application.activeWindow.getVariable("system");
 }
 
-function __pfadTitelkopie()
-{
-	//Korrektur für falsch eingestellten Titelkopie-Pfad der WinIBW3.3.7.05 (Oktober 2010)
-	var titlecopyfileLokal = application.getProfileString("winibw.filelocation", "titlecopy", "");
-	if (titlecopyfileLokal == "resource:/scripts/title.ttl"){
-		titlecopyfileLokal = titlecopyfileLokal.replace(/scripts/, "ttlcopy");
-		application.activeWindow.titleCopyFile = titlecopyfileLokal;
-		__meldung("Der Pfad der Titelkopiedatei wurde geändert in: " + titlecopyfileLokal);
-	}
-}
-
 function ppnlisteDownload()
 {
 	//PPN-Datei muss im Profiles-Verzeichnis des Benutzers gespeichert werden
@@ -601,7 +613,7 @@ function hackSystemVariables() {
 		//	Use P3G for global, P3L for local, P3V for field variables
 			varName = "P3G" + alpha.charAt(i) + alpha.charAt(j);
 			varValue = application.activeWindow.getVariable(varName);
-			if (varValue) reportG = reportG + "- " + varName + ": " + varValue + "\r\n\r\n";
+			if (varValue) reportG = reportG + "- " + varName + ": " + varValue + "\r\n";
 		}
 	}
 	//application.messageBox("G-Variable:", reportG, "message-icon");
@@ -612,7 +624,7 @@ function hackSystemVariables() {
 		//	Use P3G for global, P3L for local, P3V for field variables
 			varName = "P3V" + alpha.charAt(i) + alpha.charAt(j);
 			varValue = application.activeWindow.getVariable(varName);
-			if (varValue) reportV = reportV + "- " + varName + ": " + varValue + "\r\n\r\n";
+			if (varValue) reportV = reportV + "- " + varName + ": " + varValue + "\r\n";
 		}
 	}
 	//application.messageBox("V-Variable:", reportV, "message-icon");
@@ -623,7 +635,7 @@ function hackSystemVariables() {
 		//	Use P3G for global, P3L for local, P3V for field variables
 			varName = "P3L" + alpha.charAt(i) + alpha.charAt(j);
 			varValue = application.activeWindow.getVariable(varName);
-			if (varValue) reportL = reportL + "- " + varName + ": " + varValue + "\r\n\r\n";
+			if (varValue) reportL = reportL + "- " + varName + ": " + varValue + "\r\n";
 		}
 	}
 	//application.messageBox("L-Variable:", reportL, "message-icon");

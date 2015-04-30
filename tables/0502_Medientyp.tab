@@ -1,0 +1,15 @@
+<tbl>
+<tt> Medientyp
+<dt> 0502.tab
+<tag> 0502
+<row>s QQ audio$bs QQ audio
+<row>c QQ Computermedien$bc QQ Computermedien
+<row>h QQ Mikroform$bh QQ Mikroform
+<row>p QQ mikroskopisch$bp QQ mikroskopisch
+<row>z QQ nicht spezifiziert$bz QQ nicht spezifiziert
+<row>n QQ ohne Hilfsmittel zu benutzen$bn QQ ohne Hilfsmittel zu benutzen
+<row>g QQ projizierbar$bg QQ projizierbar
+<row>x QQ sonstige$bx QQ sonstige
+<row>e QQ stereografisch$be QQ stereografisch
+<row>v QQ video$bv QQ video
+</tbl>

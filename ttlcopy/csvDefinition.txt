@@ -100,3 +100,8 @@ Zugangsnr:             209C $a
 Verbuchungsnr:         209G $a
 Bestandsangaben7120:   231@ "/v$d"+"/b$j"+"/V$n"+"/E$k"+"-$6"
 Bestandsangaben7121:   231B $a
+Text8031:              209Bx31 $a
+Bestand8032:           209Bx32 $a
+Lücken8033:            209Bx33 "/v$d"+"/b$j"+"/V$n"+"/E$k"+"-$6"
+Kommentar8034:         209Bx34 $a
+Exemplardatum:         201B $0

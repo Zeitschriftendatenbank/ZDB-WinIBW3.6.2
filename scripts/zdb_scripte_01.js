@@ -211,8 +211,7 @@ function zdb_DigiConfig() {
 }
 
 function zdb_Digitalisierung () {
-    //__digitalisierung(false,true,"resource:/ttlcopy/zdb_titeldatenkopie_digi.ttl");
-    __digitalisierung(false,true,"resource:/ttlcopy/zdb_titeldatenkopie_digi_bsb.ttl");
+    __digitalisierung(false,true,"resource:/ttlcopy/zdb_titeldatenkopie_digi.ttl");
 }
 
 function __expansionUF(expansion)
