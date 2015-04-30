@@ -957,7 +957,7 @@ function createResult ( satz, ctrl,exit ) {
 		// handelt es sich um ein tag mit subfield?
 		//suche = "("+tag+".+)"+ctrl[idx].xsbf;
 		suche = tag+".+"+ctrl[idx].xsbf;
-	
+        suche = suche.replace('\$','\\$'); // edit zdb unescaped $ is bad in regex
 		regex = new RegExp(suche, "g");
 //alert(regex.toString());
 		group = satz.match(regex);
