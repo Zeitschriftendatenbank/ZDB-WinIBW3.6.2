@@ -80,8 +80,6 @@ chrome/ibw/content/xul/printProgress.js
 chrome/ibw/content/xul/printProgress.xul
 chrome/ibw/content/xul/Spell*
 chrome/ibw/content/xul/Standard*
-chrome/ibw/content/xul/Table*
-chrome/ibw/content/xul/TableFunctionDlg.xul
 chrome/ibw/content/xul/transliterate_dialog.js
 chrome/ibw/content/xul/transliterate_dialog.xul
 res/
