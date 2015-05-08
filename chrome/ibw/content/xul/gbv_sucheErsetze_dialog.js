@@ -48,6 +48,9 @@ var bcaseSensitive = "";
 var bwholeWord = false;
 var bFehler = false;
 var strfehlerMeldungen = "";
+
+
+
 var listenPfad = "";
 var lBearbeitet = 0;
 var strEbene = "";
@@ -152,6 +155,7 @@ function zaehleDatensaetze()
         strPPN = application.activeWindow.getVariable("P3GPP");
         for (i=0; i < application.activeWindow.messages.count; i++){
             alleMeldungen += application.activeWindow.messages.item(i).text;
+
         }
         strfehlerMeldungen += "\r\nPPN: " + strPPN + " / Meldung: " + alleMeldungen;
         //alert(strfehlerMeldungen);
@@ -244,6 +248,7 @@ try{
     application.writeProfileInt("winibw.messages", "alert", 1);
     application.writeProfileInt("winibw.messages", "error", 1);
     application.writeProfileInt("winibw.messages", "message", 1);
+
 
     var screenID = application.activeWindow.getVariable("scr");
     if (screenID != "7A" && screenID != "8A"){
@@ -755,6 +760,7 @@ function bearbeiteZeilenLoeschen()
 }
 
 
+
 //----------------------------------------------------------------
 
 function datumHeute()
@@ -822,6 +828,7 @@ function resetAlles()
     document.getElementById("idSchlussmeldung1").value = " ";
     document.getElementById("idSchlussmeldung2").value = " ";
     document.getElementById("idSchlussmeldung3").value = " ";
+
 
     strErsetze = "";
     strSuche = "";

@@ -203,3 +203,12 @@ function csvBatchTitel()
 		csv.__csvError(e);
 	}
 }
+
+function pruefeRDAsystem(){
+    var strSystem = application.activeWindow.getVariable("system");
+    if (strSystem.indexOf("ILTIS/RDA-Approval") >= 0){
+        return true;
+    } else {
+        return false;
+    }
+}

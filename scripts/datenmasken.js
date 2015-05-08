@@ -19,8 +19,13 @@ function __DatenmaskeEinfuegen(maskenNr)
 	var strSystem;
 	var theLine;
 	var titel;
-	var fileName = "\\defaults\\datenmasken\\" + maskenNr + ".txt";
-	
+    var fileName;
+	if (pruefeRDAsystem() == true){
+		//wir verwenden eine RDA-Datenmaske
+		fileName= "\\defaults\\datenmasken\\" + maskenNr + "rda.txt";
+	} else {
+		fileName= "\\defaults\\datenmasken\\" + maskenNr + ".txt";
+	}
 	//Kommandos zum Eingeben von Titeln und Normdaten
 	kommandoTitel = "\\inv 1";
 	kommandoNorm = "\\inv 2";
@@ -151,7 +156,7 @@ function DatenmaskeTb()
 }
 function DatenmaskeTbkurz()
 {
-	__DatenmaskeEinfuegen("maskeTb");
+	__DatenmaskeEinfuegen("maskeTbkurz");
 }
 function DatenmaskeTc()
 {
