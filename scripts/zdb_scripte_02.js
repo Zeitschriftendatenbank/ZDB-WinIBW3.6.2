@@ -101,7 +101,7 @@ function tf_vollenden()
     
     
     // String $d bis Ende
-    pos = temp.indexOf("$d");
+    pos = temp.indexOf(delimiter+"d");
     if ((pos > 0) && (temp.length > pos+2)) {
         temp = temp.substring(pos+2);
     }
@@ -109,8 +109,8 @@ function tf_vollenden()
     //** Eine Jahreszahl muss vorhanden sein. Deshalb die unsaubere Programmierung. **
     
     // Falls $c vorhanden, dann nur den Inhalt *bis* $c verwenden
-    var pos1 = temp.indexOf("$c");
-    var pos2 = temp.indexOf("$g");
+    var pos1 = temp.indexOf(delimiter+"c");
+    var pos2 = temp.indexOf(delimiter+"g");
     
     // Den kleineren (aber positiven) Wert verwenden.
     // Beachte: $c kommt immer vor $g (Reihenfolge)
@@ -128,7 +128,7 @@ function tf_vollenden()
         temp = temp.substring(0,pos);
         //..und der Datumsstring keinen Bindestrich enthaelt.
         if (temp.indexOf("-") <= 0) {
-            temp = "$c" + temp;
+            temp = delimiter+"c" + temp;
         }
     }
     
@@ -146,11 +146,11 @@ function tf_vollenden()
         if (temp.charAt(temp.length-1) == "-")
             temp = temp.replace("-" , "");
         
-        temp = temp.replace("-", "$b");
+        temp = temp.replace("-", delimiter+"b");
     }
         
     application.activeWindow.title.endOfBuffer(false);
-    application.activeWindow.title.insertText("\n548 " + temp + "$4datv");
+    application.activeWindow.title.insertText("\n548 " + temp + delimiter+"datv");
     
         
     
@@ -165,14 +165,14 @@ function tf_vollenden()
         
     //-- Erstes $c suchen und den String danach mit split aufteilen (in ein Orte-Array)
     
-    pos = temp.indexOf("$c");
+    pos = temp.indexOf(delimiter+"c");
     if ((pos > 0) && (temp.length > pos+2)) {
         temp = temp.substring(pos+2);
         
         //_showMessage("$c ist vorhanden");
         
         // Falls noch $g vorkommt
-        pos = temp.indexOf("$g");
+        pos = temp.indexOf(delimiter+"g");
         if (pos > 0) {
             temp = temp.substring(0,pos);
         }
@@ -231,7 +231,7 @@ function tf_vollenden()
                 
                 application.activeWindow.closeWindow();  // Schliessen des Suchfensters
                 application.activateWindow(edit_winId);  // Editfenster aktivieren
-                application.activeWindow.title.insertText("\n551 " + ort + "$4ortv");
+                application.activeWindow.title.insertText("\n551 " + ort + delimiter+"4ortv");
                 
                 // Eintraege aus den globalen Arrays entfernen.
                 // (Relevant bei mehreren Orten/Suchfenstern.)
@@ -252,7 +252,7 @@ function tf_vollenden()
                     
                     application.activeWindow.closeWindow();  // Schliessen des Suchfensters
                     application.activateWindow(edit_winId);  // Editfenster aktivieren
-                    application.activeWindow.title.insertText("\n551 !" + ppn + "!$4ortv");								
+                    application.activeWindow.title.insertText("\n551 !" + ppn + "!"+delimiter+"4ortv");								
                     
                     // Eintraege aus den globalen Arrays entfernen.
                     // (Relevant bei mehreren Orten/Suchfenstern.)
@@ -279,7 +279,7 @@ function tf_vollenden()
                         // Zum Editfenster wechseln
                     application.activateWindow(edit_winId);
                         // Der prophylaktische Eintrag
-                    application.activeWindow.title.insertText("\n551 " + ort + "$4ortv");
+                    application.activeWindow.title.insertText("\n551 " + ort + delimiter+"4ortv");
                         // Wiederaktivieren des Suchfensters
                     application.activateWindow( winId );
                     
@@ -404,7 +404,7 @@ xx = ppn;
     application.activateWindow(edit_winId);
 
     application.activeWindow.title.startOfBuffer(false);  // Ganz oba na ganna
-    suchZeile = "551 " + search_ortArray[anzSuchfenster-1] + "$4ortv";  // Suchzeile
+    suchZeile = "551 " + search_ortArray[anzSuchfenster-1] + delimiter+"4ortv";  // Suchzeile
         // Suche ausfuehren
     flg = application.activeWindow.title.find(suchZeile,false,false,false);
 
@@ -414,7 +414,7 @@ xx = ppn;
         //application.activeWindow.title.lineUp(1,false);
         
         //application.activeWindow.title.endOfBuffer(false);
-        application.activeWindow.title.insertText("551 !" + ppn + "!$4ortv\n");
+        application.activeWindow.title.insertText("551 !" + ppn + "!"+delimiter+"4ortv\n");
     }
     else {
         _showMessage("Fehler Ortsnamenvorage: Keine Uebereinstimmung Array-Editfenster" + suchZeile);

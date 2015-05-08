@@ -3,23 +3,10 @@
 	edited	ZDB 2015
 	Datum:	2006
 */
-
-
-function getSpecialPath(theDirName, theRelativePath)
+function testGlobals()
 {
-	//gibt den Pfad als String aus
-	const nsIProperties = Components.interfaces.nsIProperties;
-	var dirService = Components.classes["@mozilla.org/file/directory_service;1"]
-							.getService(nsIProperties);
-	var theFile = dirService.get(theDirName, Components.interfaces.nsILocalFile);
-	theFile.appendRelativePath(theRelativePath);
-	return theFile.path;
-}
-function getSpecialDirectory(name)
-{
-	const nsIProperties = Components.interfaces.nsIProperties;
-	var dirService = Components.classes["@mozilla.org/file/directory_service;1"].getService(nsIProperties);
-	return dirService.get(name, Components.interfaces.nsIFile);
+    __meldung(delimiter);
+    __meldung(charCode);
 }
 //-------------------------------------------------------------------------------
 function __screenID(){
@@ -76,51 +63,6 @@ function __Materialbenennung()
 	return Materialart;
 }
 
-function __docType(){
-	//funktioniert nur im title-edit-control!
-	//Bei Neuaufnahmen kann application.activeWindow.materialCode nicht verwendet werden
-	//weil kein Rückgabewert.
-	var str0500 = application.activeWindow.title.findTag("0500", 0, false, false, true);
-	if (str0500 != ""){
-		return str0500;
-	} else {
-		return application.activeWindow.title.findTag("005", 0, false, false, true)
-		}
-}
-function __alleMeldungen()
-{
-	var msgAnzahl, msgText, msgType;
-	var i;
-	var alleMeldungen = "";
-	msgAnzahl = application.activeWindow.messages.count;
-	for (i=0; i<msgAnzahl; i++)	
-	{
-		msgText = application.activeWindow.messages.item(i).text;
-		msgType = application.activeWindow.messages.item(i).type;
-		alleMeldungen += msgText + "\n";
-	}
-	//application.messageBox("Bitte beachten Sie die Meldungen!", alleMeldungen, "message-icon");
-	return alleMeldungen;
-}
-function meldungenInZwischenspeicher()
-{
-	var strMeldung = __alleMeldungen();
-	//am Ende Zeilenumbruch entfernen:
-	strMeldung = strMeldung.substr(0, strMeldung.length-1);
-	application.activeWindow.clipboard = "\u0022" + strMeldung + "\u0022"; // u0022 = Quot
-	application.activeWindow.appendMessage("Der Meldetext wurde in den Zwischenspeicher kopiert.", 3);
-}
-function __blanksLinksLoeschen()
-{
-	var blankTest;
-	do {
-		application.activeWindow.title.charLeft(1, true);
-		blankTest = application.activeWindow.title.selection;
-		if (blankTest == " ") application.activeWindow.title.deleteSelection();
-	}
-	while (blankTest == " ");
-}
-
 function __formatD()
 {
 	//Präsentationsformat prüfen und auf "D" umstellen
@@ -136,22 +78,6 @@ function __formatP()
 	}
 }
 
-
-
-function ZETA()
-{
-	var strkat;
-	if (!application.activeWindow.title){
-		application.shellExecute ("http://www.zeitschriftendatenbank.de/erschliessung/arbeitsunterlagen/zeta.html", 5, "open", "");
-	} else {
-		strkat = application.activeWindow.title.tag;
-		application.shellExecute ("http://www.zeitschriftendatenbank.de/erschliessung/arbeitsunterlagen/zeta/" + strkat + ".html", 5, "open", "");
-		}
-}
-function WinIBWHandbuch()
-{
-	application.shellExecute ("http://www.gbv.de/wikis/cls/WinIBW3:Handbuch", 5, "open", "");
-}
 //----------------------------------------------------------
 //Beide Funktionen gehören zusammen!
 function __loescheBisKategorieEnde()
@@ -212,16 +138,6 @@ function __frage(meldungstext)
 }
 // ------- Ende MessageBoxen GBV --------
 
-function __ppnPruefung(zeile)
-{
-	//kommt im String ein PPN-Link vor?
-	var regExpPPN = /!(\d{8}[\d|x|X])!/;
-	if (regExpPPN.test(zeile) == true){
-		regExpPPN.exec(zeile);
-		return RegExp.$1;
-	} else {return "";}
-}
-
 function __alleZeilenArray()
 {
 	//gibt alle Zeilen des in der Vollanzeige befindlichen Datensatzes als Array aus.
@@ -258,100 +174,6 @@ function __kategorieInhalt(strTitle, kategorie, bPlus)
 		} else {
 			return strKategorie
 		}
-}
-
-function kategorieAnalysePlus(zeile, strFeld)
-{
-	/*
-	Erhält einzelne Zeilen und ermittelt den Inhalt des Unterfeldes
-	\u192 = ƒ
-	*/
-	var analysePlus = "";
-	var lPos1 = zeile.indexOf("$" + strFeld);
-	
-	if (lPos1 != -1) {
-		analysePlus = zeile.substring(lPos1+2);
-		var lPos2 = analysePlus.indexOf("$"); //Beginn des nächsten Unterfeldes
-		if (lPos2 != -1){ 
-			analysePlus = analysePlus.substring(0, lPos2);
-		}
-	}
-	return analysePlus;
-}
-
-function kategorienLoeschen(regexKategorien)
-{
-	//Ersatz für title.ttl in Sonderfällen:
-	//Beispiel Funktionsaufruf: übergeben werden reguläre Ausdrücke, z.B.
-	//kategorienLoeschen(/2150|4201|4730|4731|5060|5065|5545|5587|5588|5589/);
-	
-	var n= 0;
-	var letzteZeile;
-
-	//wieviele Zeilen sollen geprüft werden?
-	application.activeWindow.title.endOfBuffer (false);
-	letzteZeile = application.activeWindow.title.currentLineNumber;
-	application.activeWindow.title.startOfBuffer (false);
-	
-	for (n=0; n<= letzteZeile; n++) {
-		if (regexKategorien.test(application.activeWindow.title.tag)){
-
-
-
-
-			application.activeWindow.title.deleteLine (1);
-		} else {
-			application.activeWindow.title.endOfField(false);//wichtig bei mehrzeiligen Inhalten!
-			application.activeWindow.title.lineDown (1, false);
-		}
-	}
-}
-
-function kategorienSammeln(regexKategorien){
-	//Beispiel Funktionsaufruf: übergeben werden reguläre Ausdrücke, z.B.
-	//kategorienSammeln(/2275|2276|2277/);
-	var n= 0;
-	var dieZeile, letzteZeile;
-
-	var rueckgabe = "";
-	application.activeWindow.title.endOfBuffer(false);
-	letzteZeile = application.activeWindow.title.currentLineNumber;
-	application.activeWindow.title.startOfBuffer(false);
-
-	for (n=0; n<= letzteZeile; n++) {
-		dieZeile = application.activeWindow.title.currentField;
-		if(regexKategorien.test(application.activeWindow.title.tag) == true){
-			rueckgabe = rueckgabe + "\n" + dieZeile;
-		}
-		application.activeWindow.title.endOfField(false);//wichtig bei mehrzeiligen Inhalten!
-		application.activeWindow.title.lineDown (1, false);
-	}
-	return rueckgabe;
-}
-
-function __kat70xxDatumLoeschen()
-{
-	var str70xx;
-	for (var kat = 7001; kat <= 7099; kat++){
-		str70xx = application.activeWindow.title.findTag(kat, 0, true, true, false);
-		if (str70xx != ""){
-			application.activeWindow.title.startOfField(false);
-			application.activeWindow.title.wordRight(1, false);
-			application.activeWindow.title.charRight(11, true);
-			application.activeWindow.title.deleteSelection();
-		}
-	}
-}
-
-function loescheZeileAbPosition(kategorie, position)
-{
-	//Sucht Kategorie und löscht den Rest der Zeile ab position
-	if(application.activeWindow.title.findTag(kategorie, 0, true, true, true) != "")
-	{
-		application.activeWindow.title.startOfField(false);
-		application.activeWindow.title.charRight(position, false);
-		application.activeWindow.title.deleteToEndOfLine();
-	}
 }
 
 function __datum()
@@ -413,124 +235,6 @@ function __datumUhrzeit()
 
 //----------------------------------------------------------
 
-function __loescheIdentnummern()
-{
-	var n= 0;
-	var letzteZeile;
-	//lösche alles außer 2000: d.h. 200x, 20xx, 2xxx
-	var regExpIdentnummer = /200[1-9]|20[1-9][0-9]|2[1-9][0-9][0-9]/;
-
-	//wieviele Zeilen sollen geprüft werden?
-	application.activeWindow.title.endOfBuffer (false);
-	letzteZeile = application.activeWindow.title.currentLineNumber;
-	application.activeWindow.title.startOfBuffer (false);
-	
-	for (n=0; n<= letzteZeile; n++) {
-		if (regExpIdentnummer.test(application.activeWindow.title.tag)){
-			application.activeWindow.title.deleteLine (1);
-		} else {
-			application.activeWindow.title.endOfField(false);//wichtig bei mehrzeiligen Inhalten!
-			application.activeWindow.title.lineDown (1, false);
-		}
-	}
-}
-
-function __loescheAlleExemplare()
-{
-	for(var i = 7001; i<=7099; i++){
-		if (application.activeWindow.title.findTag(i, 0, true, true, true) != ""){
-			application.activeWindow.title.startOfField(false); 
-			application.activeWindow.title.endOfBuffer(true);
-			application.activeWindow.title.deleteSelection();
-			break;
-		}
-	}
-}
-
-function __NameInvertiert(strperson)
-{
-	//Neu: Diese Funktion gibt den Namen ohne Links und Unterfeldbezeichnungen zurück
-	var lpos;
-	//Funktionsbezeichnung entfernen:	
-	strperson = strperson.replace(/\$[P5]/, "");
-	
-	//Unterfelder durch Blank ersetzen:
-	strperson = strperson.replace(/\$[cnl]/, " ");
-	
-	//alles ab PPN-Link abschneiden:
-	lpos = strperson.indexOf("!");
-	if (lpos != -1){
-		strperson = strperson.substring(0, lpos);
-	}
-	
-	//alles ab $7 abschneiden:
-	lpos = strperson.indexOf("$7");
-	if (lpos != -1){
-		strperson = strperson.substring(0, lpos);
-	}
-
-	//Text in ## entfernen:
-	strperson = strperson.replace(/#.*#/, "");
-	
-	//Text in ** entfernen:
-	strperson = strperson.replace(/\*.*\*/, "");
-	
-	//Text in [] entfernen:
-	strperson = strperson.replace(/\[.*\]/, "");
-	
-
-	//Namenskommentar entfernen:
-	strperson = strperson.replace(/ %.*/, "");
-	
-	//entferne $T + $U 
-	strperson = strperson.replace(/\$T\d{2}\$U\D{4}%%/, "");
-	return strperson;
-}
-
-function stringTrim(meinString)
-{
-	//Blanks am Anfang
-	while (meinString.charAt(0) == " "){
-		meinString = meinString.substring(1)
-	}
-	//Blanks am Ende
-	while (meinString.charAt(meinString.length-1) == " "){
-		meinString = meinString.substring(0, meinString.length-1)
-	}
-	return meinString;
-}
-
-function __fensterWechsel()
-{
-	/*Prüfung ob zwei Fenster, wechselt von einem zum anderen
-	Rückgabewert: Variable System
-	Funktionsaufruf: 	__fensterWechsel();
-	Funktionsaufruf mit Prüfung: 
-		var strSystemNeu = __fensterWechsel();
-		if (strSystemNeu != "ACQ" && strSystemNeu != "OUS" && strSystemNeu != "OWC"){
-	*/
-	var fensterAnzahl = application.windows.count;
-	var fensterId = new Array();
-		
-	if (fensterAnzahl != 2) {
-		__meldung("Sie haben " + fensterAnzahl + " Fenster geöffnet. Es müssen genau 2 sein.");
-		return "";
-	}
-	
-	for (var i=0; i<fensterAnzahl; i++) {
-		//beide Ids:
-		fensterId[i] = application.windows.item(i).windowID;
-	}
-	//__meldung("System: " + strSystem + "\naktuell: " + application.activeWindow.windowID + "\n0: " + fensterId[0] + "\n1: " + fensterId[1]);
-	
-	//öffne das andere Fenster:
-	if (application.activeWindow.windowID == fensterId[0]) {
-		application.activateWindow(fensterId[1]);
-	} else {application.activateWindow(fensterId[0]);
-	}
-	return application.activeWindow.getVariable("system");
-}
-
 function ppnlisteDownload()
 {
 	//PPN-Datei muss im Profiles-Verzeichnis des Benutzers gespeichert werden
@@ -577,30 +281,6 @@ Historie:
 	return msg;
 }
 
-function templateID_melden(){
-	var strscreen = application.activeWindow.getVariable("scr");
-	application.activeWindow.clipboard = strscreen;
-	__meldung("Template: " + strscreen);
-}
-
-function alleSchriftenArray(zeilen){
-	//Diese Funktion erwartet den kopierten Datensatz oder einzelne Zeilen daraus
-	//Sie gibt einen Array aller Schriften zurück in der Form: "$UHebr%%"
-	var alleSchriften = zeilen.match(/\$U\D{4}%%*/g);
-	if (alleSchriften) {
-		alleSchriften.sort();
-		for (i = 1; i <= alleSchriften.length; i++){
-			//wichtig, damit am Ende des Arrays keine Fehlermeldung kommt (undefined): 
-			if (alleSchriften[i]) {
-				while(alleSchriften[i] == alleSchriften[i-1]){
-					alleSchriften.splice(i, 1);
-				}
-			}
-		}
-	} 
-	return alleSchriften;
-}
-
 //----------------------------------------
 function hackSystemVariables() {
 	//Clemens Buijs:
@@ -645,17 +325,6 @@ function hackSystemVariables() {
 	application.activeWindow.appendMessage("Alle Variablen befinden sich jetzt im Zwischenspeicher", 2);
 }
 //-------------------------------------------------------------------------------
-function filtereRecherche(suchBegriffe)
-{
-	//ein String wird geliefert, z.B. aus einem Titel 
-	//diese Begriffe sollen für eine Recherche weitergenutzt werden
-	//Begriffe und Zeichen, die gleichzeitig Operatoren sind, müssen herausgefiltert werden.
-	// \b = als Wort \u0022 = ", \u0027 = '
-	//alle Semikola und alle Operatoren entfernen, ansonsten Kommandofehler bzw. falsche Treffermengen:
-	suchBegriffe = suchBegriffe.replace(/;|\boder\b|\bor\b|\bnicht\b|\bnot\b| - |\bbei\b|\bnear\b/gi, " ");
-	suchBegriffe = suchBegriffe.replace(/;|\?|\*|!|"|'|#|\||\[|\]/gi, "");
-	return suchBegriffe;
-}
 
 function WinIBW3_Verzeichnisse(){
 	//Funktion gibt Informationen über Installations- und Benutzerverzeichnis aus.

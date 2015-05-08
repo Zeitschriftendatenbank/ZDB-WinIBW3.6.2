@@ -77,8 +77,8 @@ var bContentsChanged;
 var strSST;
 var auswahlDatei; //Standardkonfigurationstabelle oder eigeneAuswahl
 var strTrennzeichen;
-var delimiter = '$'; // Unterfeldzeichen "ƒ" = \u0192
-var charCode = 36; // Unterfeldzeichen "ƒ" = 402, Unterfeldzeichen "$" = 36
+var delimiter = '\0192'; // Unterfeldzeichen "ƒ" = \u0192
+var charCode = 402; // Unterfeldzeichen "ƒ" = 402, Unterfeldzeichen "$" = 36
 //----------------------------------------------------------------------------
 
 const utility = 

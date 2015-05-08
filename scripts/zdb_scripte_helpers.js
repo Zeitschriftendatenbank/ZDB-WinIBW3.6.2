@@ -335,7 +335,7 @@ function __zdbGetParallel()
         if(application.activeWindow.getVariable("P3GDB").match(/P|PA/i))
         {
             tag = "039D";
-            regex =  /\$a([^\u0192]*)\$9([^\$]*)/;
+            regex =  new RegExp(delimiterReg+"a([^"+delimiterReg+"]*)"+delimiterReg+"9([^"+delimiterReg+"]*)","g");
         }
         else if(application.activeWindow.getVariable("P3GDB").match(/D|DA/i))
         {
@@ -354,7 +354,7 @@ function __zdbGetParallel()
         if(application.activeWindow.getVariable("P3GDL").match(/P|PA/i))
         {
             tag = "039D";
-            regex = /\u0192a([^\u0192]*)\u01929([^\u0192]*)/;
+            regex = new RegExp(delimiterReg+"a([^"+delimiterReg+"]*)"+delimiterReg+"9([^"+delimiterReg+"]*)","g");
         }
         else if(application.activeWindow.getVariable("P3GDL").match(/D|DA/i))
         {

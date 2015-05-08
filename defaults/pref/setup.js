@@ -24,6 +24,7 @@ pref("winibw.help_MI.suffix", "/");
 pref("winibw.help_II.prefix", "/");
 pref("winibw.help_II.suffix", "/");
 pref("winibw.help.AccessControl", false);
+pref("ibw.standardScripts.script.00", "resource:/scripts/zdb_globals.js");
 pref("ibw.standardScripts.script.01", "resource:/scripts/config_german.js");
 pref("ibw.standardScripts.script.02", "resource:/scripts/datenmasken.js");
 pref("ibw.standardScripts.script.03", "resource:/scripts/dnb_authorities.js");
