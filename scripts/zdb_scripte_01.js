@@ -221,7 +221,15 @@ function __expansionUF(expansion)
         expansion = expansion.replace(/\$\$/, "\$");
     }
     expansion = expansion.replace(/\$b/, " / ");
-    re = new RegExp("(.*)"+delimiterReg+"[gcn]([^:]*)(.*)")
+    if(expansion.match(/\u0192/))
+    {
+        re = new RegExp("(.*)"+delimiterReg+"[gcn]([^:]*)(.*)")
+    }
+    else
+    {
+         re = new RegExp("(.*)\$[gcn]([^:]*)(.*)")
+    }
+    
     expansion = expansion.replace(re, "$1 <$2>$3");
     return expansion;
 }
