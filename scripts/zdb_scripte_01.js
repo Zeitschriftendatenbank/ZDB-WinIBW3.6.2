@@ -221,7 +221,7 @@ function __expansionUF(expansion)
         expansion = expansion.replace(/\$\$/, "\$");
     }
     expansion = expansion.replace(/\$b/, " / ");
-    re = new RegExp("(.*)"+delimiterReg+"[gcn]([^:]*)(.*)","g")
+    re = new RegExp("(.*)"+delimiterReg+"[gcn]([^:]*)(.*)")
     expansion = expansion.replace(re, "$1 <$2>$3");
     return expansion;
 }
@@ -258,22 +258,23 @@ function __digitalisierung(digiConfig,showComment,copyFile) {
     while(application.activeWindow.title.findTag("039E", x, false, true, false) !== ""){
         current = application.activeWindow.title.currentField;
         feld4244[x] = current.substr(4);
-        re = new RegExp(delimiterReg+"b.","g");
+        re = new RegExp(delimiterReg+"b.");
         code = feld4244[x].match(re)[0][2];
-        re = new RegExp(delimiterReg+"b."+delimiterReg+".","g");
+        re = new RegExp(delimiterReg+"b."+delimiterReg+".");
         //---switch the subfields
         switch(feld4244[x].match(re)[0][4]){
+        
             case "r" : 
-                re = new RegExp(delimiterReg+"b."+delimiterReg+"r(.*)","g");
+                re = new RegExp(delimiterReg+"b."+delimiterReg+"r(.*)");
                 feld4244[x] = "4244 " + code +"#{" + feld4244[x].match(re)[1] + "}";
             break;
             case "a" : 
-                re = new RegExp(delimiterReg+"b."+delimiterReg+"a(.*)"+delimiterReg+"9","g");
-                re2 = new RegExp(delimiterReg+"8\s?(?:--T..--\s)?\s?(?:.*)--[A-Za-z0-9]{4}--\s?:?\s?(.*)","g");
+                re = new RegExp(delimiterReg+"b."+delimiterReg+"a(.*)"+delimiterReg+"9");
+                re2 = new RegExp(delimiterReg+"8\s?(?:--T..--\s)?\s?(?:.*)--[A-Za-z0-9]{4}--\s?:?\s?(.*)");
                 feld4244[x] = "4244 " + code +"#{" + feld4244[x].match(re)[1] + " ---> " + __expansionUF(feld4244[x].match(re2)[1]) + "}";
             break;
             default : 
-                re = new RegExp(delimiterReg+"8\s?(?:--T..--\s)?\s?(?:.*)--[A-Za-z0-9]{4}--\s?:?\s?(.*)","g");
+                re = new RegExp(delimiterReg+"8\s?(?:--T..--\s)?\s?(?:.*)--[A-Za-z0-9]{4}--\s?:?\s?(.*)");
                 feld4244[x] = "4244 " + code +"#{" + __zdbSwitchCode4244(code) + " ---> " + __expansionUF(feld4244[x].match(re)[1]) + "}";
             break;
         }
@@ -293,16 +294,18 @@ function __digitalisierung(digiConfig,showComment,copyFile) {
         {
             current = application.activeWindow.title.currentField;
             felder424X[x].cont = current.substr(4);
+            
             verbal = false;
             matches = false;
-            re = new RegExp(delimiterReg+"r(.*)"+delimiterReg,"g");
+            re = new RegExp(delimiterReg+"r(.*)"+delimiterReg);
             if(verbal = felder424X[x].cont.match(re))
             {
                 felder424X[x].verbal = felder424X[x].kat + " " + verbal[1];
             }
             else
             {
-                re = new RegExp(delimiterReg+"a(.*)"+delimiterReg+"9.*"+delimiterReg+"8\s?--A[A-Za-z]{3}--\s?:?\s?(?:--T..--\s)?(.*)","g");
+                
+                re = new RegExp(delimiterReg+"a(.*)"+delimiterReg+"9.*"+delimiterReg+"8\s?--A[A-Za-z]{3}--\s?:?\s?(?:--T..--\s)?(.*)");
                 if(matches = felder424X[x].cont.match(re))
                 {
                     if("039S" == felder424X[x].p)
