@@ -1,7 +1,8 @@
 // Datei:			zdb_scripte_01.js
 // Autor:			Carsten Klee (ZDB)
 // Prüfung für GBV: 	Karen Hachmann (GBV)
-//         2013-08: aktuelle Scripte der ZDB geholt.
+// 2013-08: aktuelle Scripte der ZDB geholt.
+// 2015-05-21 aktualisiert Carsten Klee
 
 var delimiter = '\u0192'; // Unterfeldzeichen "ƒ" = \u0192
 var delimiterReg = '\u0192'; // regualr expression version Unterfeldzeichen "$" = \$
