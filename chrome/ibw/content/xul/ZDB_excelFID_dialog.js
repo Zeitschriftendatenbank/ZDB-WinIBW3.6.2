@@ -78,8 +78,9 @@ var directory;
 var bContentsChanged;
 var auswahlDatei; //Standardkonfigurationstabelle oder eigeneAuswahl
 var strTrennzeichen;
-var delimiter = '\0192'; // Unterfeldzeichen "ƒ" = \u0192
+var delimiter = '\u0192'; // Unterfeldzeichen "ƒ" = \u0192
 var charCode = 402; // Unterfeldzeichen "ƒ" = 402, Unterfeldzeichen "$" = 36
+var delimiterReg = '\u0192'; // regualr expression version Unterfeldzeichen "$" = \$
 
 //----------------------------------------------------------------------------
 
@@ -767,7 +768,7 @@ function csvTestHeader ( filename, header ) {
 
 function handleRecord ( satz, ctrl ) {
 
-	var		lineblock, tmp_satz, tmp_line, idx, loopcnt;
+	var		lineblock, tmp_satz, tmp_line, idx, loopcnt,re;
 	//__M(satz);//der vollständige Titel mit allen Exemplaren
     var ex = satz.match(/\n203@/);
     var title = "";
@@ -794,6 +795,7 @@ function handleRecord ( satz, ctrl ) {
     //__M("exit:"+exemplare.length);
     //__M("loopcnt:"+loopcnt);
     lineblock = "";
+    re = new RegExp("(-\s?)"+delimiterReg+"x32");
     for (var x=0; x<exemplare.length; x++)
     {
         tmp_satz = title + "\n" + exemplare[x];
@@ -809,7 +811,7 @@ function handleRecord ( satz, ctrl ) {
             var arr8032 = tmp_satz.match(/209B\/.*?x32/);
 //__M("8032: "+arr8032[0]);
             //var arr8032LastChar = arr8032[0].match(/(.)\u0192x32/)// Unterfeldzeichen "ƒ" = \u0192
-            if(arr8032[0].match(/(-\s?)\$x32/))// Unterfeldzeichen "ƒ" = \u0192
+            if(arr8032[0].match(re))// Unterfeldzeichen "ƒ" = \u0192
 //__M("8032 last Char: "+arr8032LastChar);
             //if (arr8032LastChar[1] == "-")
             {
@@ -898,6 +900,7 @@ function handleRecordPart ( satz, accept, ctrl, exit ) {
     createResult(satz,ctrl,exit);
     //EPN wird ermittelt:
     var str7800 = "";
+
 
     line = '"' + application.activeWindow.getVariable("P3GPP") + '"\t';
     //if (global.csvLevel2) {
