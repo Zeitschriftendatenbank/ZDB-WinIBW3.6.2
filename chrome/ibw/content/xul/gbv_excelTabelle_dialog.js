@@ -11,6 +11,8 @@
       04.2013: Anwender können selbst auswählen, welche Trennzeichen
                verwendet werden sollen, wenn ein Feld wiederholbar ist.
                Habe "; " durch strTrennzeichen ersetzt
+      11.2013: writeCSV: if-Bedingung entfernt, da ansonsten gerade vorgenommene Änderungen
+               in der Konfigurationsdatei des Nutzers nicht gelesen werden
  ***************************************************************************
  ZDB: Wiederholte Felder und Unterfelder
  - Funktionen createResult(), convertText überarbeitet
@@ -57,7 +59,6 @@ function onAccept()
 	document.getElementById("idLabelErgebnis2").value = "WinIBW3 zeigt evtl. keine Reaktion bis zum Ende des Downloads."
 	document.getElementById("idTextboxPfad").value="";
 	strSST = document.getElementById("idTextboxSST").value;
-	ladeKonfigurationstabelleUser();
 	strTrennzeichen = document.getElementById("idTextboxTrennzeichen").value; //das aktuelle wird verwendet
 	if (strTrennzeichen == ""){strTrennzeichen="; "}
 	writeCSV();
@@ -184,23 +185,6 @@ function __hebisMsg(meldetext)
 function __M(meldungstext)
 {
 	application.messageBox("Hinweis", meldungstext, "message-icon");
-
-}
-
-function __frage(line){
-	var thePrompter = utility.newPrompter();
-	var antwort = thePrompter.confirmEx("Hinweis zur Konfigurationstabelle", 
-		"Diese Zeile in Ihrer Konfigurationstabelle ist fehlerhaft:\n" + line
-		+ "\n\nInformationen zur Konfigurationstabelle finden Sie im WinIBW3-Wiki."
-		+ "\nJetzt lesen?", 
-		"Ja", "Nein", "", "", "");
-	//alert(antwort);
-	if (antwort == 0) {
-		application.shellExecute ("http://www.gbv.de/wikis/cls/WinIBW3:Excel-Tabelle_erstellen#Konfiguration_des_Excel-Werkzeugs", 5, "open", "");
-		window.close(); //Dialogform wird geschlossen
-	} else {
-		return false;
-	}
 }
 
 function __getExpansionFromP3VTX() {
@@ -333,7 +317,6 @@ function readControl ( inp, must ) {
 //				__hebisError("In einer csv Definition müssen Kategorien "
 //							+ "angegeben werden. Die folgende Zeile "
 //							+ "wird nicht akzeptiert:\n\n" + line);
-				__frage(line);
 				return null;
 			}	
 			theFileContent.push(tmp);
@@ -346,7 +329,6 @@ function readControl ( inp, must ) {
 	}
 	
 	if (cnt == 0)	return null;
-	
 	return theFileContent;
 }
 
@@ -362,18 +344,26 @@ function readControl ( inp, must ) {
 // --------------------------------------------------------------------------------
 
 function replaceDefinitions ( defs, content ) {
-
-	var newcont = new Array();
-	
+	var newcont = new Array();	
 	for (var idx=0; idx < content.length; idx += 2) {
 		var defval;
 		newcont.push(content[idx]);
 		defval = getDefinition(defs,content[idx+1]);
 		if (defval == null) {
 			if (!checkIfTag(content[idx+1])) {
-				__hebisError("csv Definition nicht gefunden. Die folgende "
-							+ "Zeile konnte nicht akzeptiert werden:\n\n"
-							+ content[idx] + ": " + content[idx+1]);
+				//__hebisError("Diese Zeile in der Konfigurationsdatei ist fehlerhaft:\n\n"
+				//			+ content[idx] + ": " + content[idx+1]);
+				var thePrompter = utility.newPrompter();
+				var antwort = thePrompter.confirmEx("Hinweis zur Konfigurationstabelle", 
+					"Diese Zeile in Ihrer Konfigurationstabelle ist fehlerhaft:\n" + content[idx] + ": " + content[idx+1]
+					+ "\n\nInformationen zur Konfigurationstabelle finden Sie im WinIBW3-Wiki."
+					+ "\nWollen Sie die Informationen jetzt lesen?", 
+					"Ja", "Nein", "", "", "");
+				//alert(antwort);
+				if (antwort == 0) {
+					application.shellExecute ("http://www.gbv.de/wikis/cls/WinIBW3:Excel-Tabelle_erstellen#Konfiguration_des_Excel-Werkzeugs", 5, "open", "");
+					window.close(); //Dialogform wird geschlossen
+				}
 				return null;
 			}
 			newcont.push(content[idx+1]);
@@ -383,7 +373,6 @@ function replaceDefinitions ( defs, content ) {
 	}
 	
 	return (newcont)
-
 }
 
 // --------------------------------------------------------------------------------
@@ -418,7 +407,6 @@ function getDefinition ( defs, mask ) {
 // --------------------------------------------------------------------------------
 
 function checkIfTag ( text ) {
-
 	var idx = 0;
 	var lev2;
 
@@ -794,7 +782,6 @@ function handleRecord ( satz, ctrl ) {
 			lineblock = handleRecordPart(tmp_satz,true,ctrl);
 		}
 	//ende else} GBV: entfernt
-	//__M(lineblock);
 	return lineblock;
 }
 
@@ -867,7 +854,6 @@ function filterCopy ( satz, occ ) {
 		} else{
 			var arr7100 = tmp_satz.match(regex7100);
 			// Unterfeldzeichen "ƒ" = \u0192
-			//if (arr7100[0].indexOf("\u0192f"+strSST+"\u0192") == -1){
 			if (arr7100[0].indexOf(delimiter+"f"+strSST+delimiter) == -1){
 				tmp_satz = "";
 			}
@@ -930,7 +916,6 @@ function handleRecordPart ( satz, accept, ctrl ) {
 		ctrl[idx].val = ctrl[idx].val.replace(/&gt;/g,">");
 		line += '"' + ctrl[idx].val.replace(/\u0022/g,"'") + '"\t';
 	}
-    //__M("line:"+line);
 	line = line.replace(/;$/,"");
 	//__M("line:"+line); //ganze Zeile, die in Tabelle eingefügt wird.
 	ctrl.cnt++;
@@ -965,10 +950,8 @@ function createResult ( satz, ctrl ) {
 		// handelt es sich um ein tag mit subfield?
 		//suche = "("+tag+".+)"+ctrl[idx].xsbf;
 		suche = tag+".+"+ctrl[idx].xsbf;
-        suche = suche.replace('\$','\\$'); // edit zdb unescaped $ is bad in regex
 		regex = new RegExp(suche, "g");
 		group = satz.match(regex);
-        
 		if(group)
 		{
 			var tempArray = new Array();
@@ -1018,6 +1001,7 @@ function createResult ( satz, ctrl ) {
 
 	}
 
+	//__M("retval:"+retval);
 	return;
 }
 
@@ -1158,7 +1142,10 @@ function writeCSV()
 	cnt = parseInt(application.activeWindow.getVariable("P3GSZ"));
 	//GBV: keine Begrenzung der Mengen. Anweisungen zur Begrenzung der Sets entfernt.
 	
-	if (global.csvDefinitions == null) {
+	//GBV: Tabelle soll immer neu gelesen werden, denn sonst werden Änderungen 
+	//     und Korrekturen in der Auswahl der Felder nicht berücksichtigt.
+	//     deshalb if-Bedingung auskommentiert
+	//if (global.csvDefinitions == null) {
 		var defInpFile = utility.newFileInput();
 		//die ausgewählte Konfigurationsdatei wird verwendet:
 		if (einstellungKonfigurationstabelle() == 1){
@@ -1176,21 +1163,12 @@ function writeCSV()
 			}
 		}
 		
-		
-		//wenn der Benutzer eigene Konfiguration hat, wird diese gelesen:
-//		if (!defInpFile.openSpecial("ProfD", "\\csvDefinitionUser.txt")) {
-//			if (!defInpFile.openSpecial("BinDir", "ttlcopy\\csvDefinition.txt")) {
-//				__hebisMsg("CSV Definitionen nicht gefunden.\n"
-//						+ "Bitte wenden Sie sich an Ihre Systembetreuer.");
-//				return false;
-//			}
-//		}
 		global.csvDefinitions = readControl(defInpFile,true);
 		defInpFile.close();
 		defInpFile = null;
 		if (global.csvDefinitions == null)		return false;
 		//__M(global.csvDefinitions.join("!\n!")); 
-	}
+	//} Ende der if-Bedingung auskommentiert
 
 	//Lesen der Definition:
 	content = global.csvDefinitions;
@@ -1300,7 +1278,7 @@ function writeCSV()
 
 //**************************************************************************
 
-function wikiAnzeigen1()
+function wikiWinibw()
 {
 	//Hilfe allgemein
 	application.shellExecute ("http://www.gbv.de/wikis/cls/WinIBW3:Excel-Tabelle_erstellen", 5, "open", "");
@@ -1389,27 +1367,31 @@ try{
 
 function ladeKonfigurationstabelleUser()
 {
-try{
-	var zeile = "";
-	var i = 0;
-	var defInpFile = utility.newFileInput();
-	var arrayTabelle = new Array();
-	
-	if (!defInpFile.openSpecial("ProfD", "\\csvDefinitionUser.txt")) {
-		//es gibt keine Einstellungen des Benutzers. Textfeld wird nicht gefüllt.
-		return;
-	}
+    try{
+        //in dieser Funktion wird die Konfigurationstabelle gelesen  
+        //der Inhalt wird auf der zweiten Registerkarte des Dialogformulars angezeigt
+        var zeile = "";
+        var i = 0;
+        var defInpFile = utility.newFileInput();
+        var arrayTabelle = new Array();
 
-	//Alle Zeilen der Datei lesen:
-	for (zeile = ""; !defInpFile.isEOF(); ) {
-		zeile = defInpFile.readLine();
-			if (zeile.substring(0,2) != "//" && zeile.length != 0){
-				arrayTabelle[i] = zeile;
-				i++
-			}
-	}
-	document.getElementById("idAuswahlZeilen").value = arrayTabelle.join("\n");
-} catch(e) { alert('ladeKonfigurationstabelleUser: '+ e.name + ': ' + e.message); }
+        if (!defInpFile.openSpecial("ProfD", "\\csvDefinitionUser.txt")) {
+
+        //Es gibt keine Konfigrationseinstellungen des Benutzers
+        return;
+        }
+
+        //Alle Zeilen der Datei lesen:
+        for (zeile = ""; !defInpFile.isEOF(); ) {
+            zeile = defInpFile.readLine();
+            if (zeile.substring(0,2) != "//" && zeile.length != 0){
+                arrayTabelle[i] = zeile;
+                i++
+            }
+        }
+        //zeige die Zeilen aus der Konfigurationstabelle im Textfeld an:
+        document.getElementById("idAuswahlZeilen").value = arrayTabelle.join("\n");
+    } catch(e) { alert('ladeKonfigurationstabelleUser: '+ e.name + ': ' + e.message); }
 }
 
 function waehleZeile()

@@ -9,7 +9,8 @@
 	ondialogaccept="return onAccept();"
 	ondialogcancel="return onCancel();"
 	onunload="application.activate();"
-	buttons="cancel"
+	buttons="cancel,help"
+	ondialoghelp="wikiWinibw();"
 	style="min-height: 30em; min-width: 50em"
 >
 <script type="application/x-javascript" src="chrome://ibw/content/xul/gbv_excelTabelle_dialog.js" />
