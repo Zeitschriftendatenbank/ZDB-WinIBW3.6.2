@@ -33,7 +33,7 @@ function __DatenmaskeEinfuegen(maskenNr)
 	// Datenmaskendatei im Verzeichnis profiles\<user>\datenmasken oeffnen:
 	if (!theFileInput.openSpecial("ProfD", fileName)) {
 		if (!theFileInput.openSpecial("BinDir", fileName)) {
-			application.messageBox("Exemplar anhängen","Datei für Datenmaske " + maskenNr + 
+			application.messageBox("Exemplar anhängen","Datei für Datenmaske " + maskenNr +
 				" wurde nicht gefunden.", "error-icon");
 			return;
 		}
@@ -52,7 +52,7 @@ function __DatenmaskeEinfuegen(maskenNr)
 	}
 	theFileInput.close();
 	var editing = (application.activeWindow.title != null);
-	
+
 	strSystem = application.activeWindow.getVariable("system");
 	if (strSystem == "ACQ" || strSystem == "OUS"|| strSystem == "OWC"){
 		//wir sind im LBS:
@@ -77,15 +77,15 @@ function __DatenmaskeEinfuegen(maskenNr)
 
 	if (dasKommando == "") {
 		// The data is inserted in the edit window at the cursor position.
-		// The "++" is not removed (as in maskeEinfuegen), because the data already present 
+		// The "++" is not removed (as in maskeEinfuegen), because the data already present
 		// might contain this.
 		application.activeWindow.title.insertText(titel);
 		return;
-	}		
-	
+	}
+
 	//wenn editing = true, dann wird das Kommando in neuem Fenster ausgeführt
 	application.activeWindow.command(dasKommando, editing);
-	
+
 	// Eingeben oder Abbruch, falls kein titleedit vorliegt:
 	if (application.activeWindow.title) {
 		__maskeEinfuegen(titel);
@@ -175,7 +175,7 @@ function DatenmaskeTc()
 		return(false);
 	}
 	__DatenmaskeEinfuegen("maskeTc");
-	//übernommenen Ländercode einfügen	
+	//übernommenen Ländercode einfügen
 	if (tag065 != "") {
 		var str065 = tag065[0].substr(4);
 		application.activeWindow.title.startOfBuffer(false);

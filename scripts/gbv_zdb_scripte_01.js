@@ -482,7 +482,6 @@ function __digitalisierung(digiConfig,showComment,copyFile) {
     }
     
     //-- open title
-    //application.activeWindow.command("k p", false);
     application.activeWindow.command("k p", false);
     
     //--- vars we need
@@ -584,7 +583,7 @@ function __digitalisierung(digiConfig,showComment,copyFile) {
                 partOfLine = aLine.match(/([0-9]*)\s(.*)/);
 
                 if (partOfLine[1] == "1101" && partOfLine[2] == "") {
-                    digiConfig[partOfLine[1]] = {kat:partOfLine[1],cont:"cr"};
+                    digiConfig[partOfLine[1]] = {kat:partOfLine[1],cont:" cr"};
                 }
                 else if(partOfLine[1] == "4085")
                 {
@@ -592,7 +591,7 @@ function __digitalisierung(digiConfig,showComment,copyFile) {
                 }
                 else
                 {
-                    digiConfig[partOfLine[1]] = {kat:partOfLine[1], cont:partOfLine[2]};
+                    digiConfig[partOfLine[1]] = {kat:partOfLine[1], cont:" "+partOfLine[2]};
                 }
                 
             }

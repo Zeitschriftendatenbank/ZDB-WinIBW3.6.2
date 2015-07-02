@@ -200,8 +200,16 @@ function zdb_DigiConfig() {
 
 }
 
-function zdb_Digitalisierung () {
-    __digitalisierung(false,true,"resource:/ttlcopy/zdb_titeldatenkopie_digi.ttl");
+function zdb_Digitalisierung() {
+    if(pruefeRDAsystem())
+    {
+        __digitalisierungRDA(false,true,"resource:/ttlcopy/zdb_titeldatenkopie_digi.ttl");
+    }
+    else
+    {
+        __digitalisierung(false,true,"resource:/ttlcopy/zdb_titeldatenkopie_digi.ttl");
+    }
+    
 }
 
 function __expansionUF(expansion)
@@ -239,8 +247,7 @@ function __digitalisierung(digiConfig,showComment,copyFile) {
         return true;
     }
     
-    //-- open title
-    //application.activeWindow.command("k p", false);
+    //-- open title; da keine Expansion aus Vollansicht
     application.activeWindow.command("k p", false);
     
     //--- vars we need
@@ -342,7 +349,7 @@ function __digitalisierung(digiConfig,showComment,copyFile) {
                 partOfLine = aLine.match(/([0-9]*)\s(.*)/);
 
                 if (partOfLine[1] == "1101" && partOfLine[2] == "") {
-                    digiConfig[partOfLine[1]] = {kat:partOfLine[1],cont:"cr"};
+                    digiConfig[partOfLine[1]] = {kat:partOfLine[1],cont:" cr"};
                 }
                 else if(partOfLine[1] == "4085")
                 {
@@ -350,7 +357,265 @@ function __digitalisierung(digiConfig,showComment,copyFile) {
                 }
                 else
                 {
-                    digiConfig[partOfLine[1]] = {kat:partOfLine[1], cont:partOfLine[2]};
+                    digiConfig[partOfLine[1]] = {kat:partOfLine[1], cont:" "+partOfLine[2]};
+                }
+                
+            }
+            fileInput.close();
+        } else {
+            digiConfig[1101] = {kat:"1101 ",cont:"cr"};
+            digiConfig[1109] = {kat:"1109 ",cont:""};
+            digiConfig[2050] = {kat:"2050 ",cont:""};
+            digiConfig[4048] = {kat:"4048 ",cont:""};
+            digiConfig[4085] = {kat:"4085 =u ",cont:""};
+            digiConfig[4119] = {kat:"4119 ",cont:""};
+            digiConfig[4233] = {kat:"4233 ",cont:""};
+            digiConfig[4237] = {kat:"4237 ",cont:""};
+            digiConfig[4251] = {kat:"4251 ",cont:""};
+        }
+    }
+
+    // Titelaufnahme kopieren und neue Titelaufnahme anlegen
+    application.activeWindow.copyTitle();
+    application.activeWindow.command("ein t", false);
+    if(showComment != false) application.activeWindow.title.insertText(" *** Titeldatenkopie Digitalisierung *** \n");
+    application.activeWindow.pasteTitle();
+    //Wiederherstellen des ursprünglichen Pfades der Titelkopie-Datei:
+    application.activeWindow.titleCopyFile = titlecopyfileStandard;
+    
+    // Kategorie 0500: Bibliographische Gattung/Status ändern
+    var f0500 = application.activeWindow.title.findTag("0500", 0, false, true, true);
+    f0500 = f0500.replace("A","O");
+    f0500 = f0500.replace("v","x");
+    application.activeWindow.title.insertText(f0500);
+
+    // Kategorie 0600: Ersetzungen und Ergänzungen
+    var codes0600 = application.activeWindow.title.findTag("0600", 0, false, true, true);
+    if (codes0600 != "") {
+        deletecodes = new Array("es", "ks", "sf", "sm", "mg", "mm", "nw", "ra", "rb", "rc", "rg", "ru", "ee", "vt");
+        for (var i = 0; i < deletecodes.length; i++) {
+            if (codes0600.match(deletecodes[i])) {
+                var pos_deletecodes = codes0600.indexOf(deletecodes[i]) + deletecodes[i].length;
+                //application.messageBox("", deletecodes[i], "");
+                if (codes0600.charAt(pos_deletecodes) == ";") {
+                    deletecodes[i] = deletecodes[i] + ";";
+                }
+                codes0600 = codes0600.replace(deletecodes[i],"");
+            }
+        }
+        if (codes0600 != "") {
+            if(codes0600.charAt(codes0600.length-1) == ";") {
+                application.activeWindow.title.insertText(codes0600);
+                application.activeWindow.title.insertText("ld;dm");
+            } else {
+                application.activeWindow.title.insertText(codes0600);
+                application.activeWindow.title.insertText(";ld;dm");
+            }
+        } else {
+            application.activeWindow.title.insertText("ld;dm");
+        }
+    } else {
+        application.activeWindow.title.insertText("\n0600 ld;dm");
+    }
+
+    for(var x in digiConfig)
+    {
+        application.activeWindow.title.endOfBuffer(false);
+        application.activeWindow.title.insertText(digiConfig[x].kat + digiConfig[x].cont + "\n");
+    }
+    // Kategorie 2010: Inhalt in 2013 ausgeben und löschen
+    var y = 0;
+    var f2010;
+    while( (f2010 = application.activeWindow.title.findTag("2010", y, false, true, true)) !="")
+    {
+        application.activeWindow.title.deleteLine(1);
+        application.activeWindow.title.insertText("2013 |p|" + f2010 + "\n");
+    }
+
+    __zdbEResource();
+    
+    // Merke das Loeschen der Felder ist überflüssig, wenn in der Titelkopiedatei die Felder nicht mitkopiert werden.
+    // Kategorie 4244: löschen und neu ausgeben
+    while(application.activeWindow.title.findTag("4244", 0, false, true, false) !== ""){
+        application.activeWindow.title.deleteLine(1);
+    }
+    application.activeWindow.title.endOfBuffer(false);
+    for(var num = 0; num < feld4244.length; num++){
+        application.activeWindow.title.insertText(feld4244[num] + "\n");
+    }
+    
+    for(var rel in felder424X){
+        // Kategorien 424X: löschen und neu ausgeben
+        while(application.activeWindow.title.findTag(felder424X[rel].kat, 0, false, true, false) !== ""){
+            application.activeWindow.title.deleteLine(1);
+        }
+        if(felder424X[rel].verbal != "") application.activeWindow.title.insertText("\n" + felder424X[rel].verbal + "\n");
+    }
+    
+    // Kategorie 4234: anlegen und mit Text "4243 Druckausg.![...IDN...]!" befüllen
+    application.activeWindow.title.endOfBuffer(false);
+    application.activeWindow.title.insertText("\n4243 Druckausg.!" + idn + "!");
+    
+    // Kategorie 5080 bereinigen: nur DDC
+    __zdb5080();
+}
+
+
+function __digitalisierungRDA(digiConfig,showComment,copyFile) {
+    digiConfig = typeof digiConfig !== 'undefined' ? digiConfig : false;
+    // Prüfen ob Bildschirm = Trefferliste oder Vollanzeige
+    var strScreen = application.activeWindow.getVariable("scr");
+    if (strScreen != "7A" && strScreen != "8A") {
+            application.messageBox("Digitalisierung", "Die Funktion muss aus der Trefferliste oder der Vollanzeige aufgerufen werden.", "alert-icon");
+            return;
+    }
+
+    // Prüfen, ob Titeldatensatz mit bibliographischer Gattung "A" aufgerufen, bei "T" oder "O" Fehlermeldung ausgeben
+    var matCode = application.activeWindow.materialCode.charAt(0);
+    if(matCode == "T" || matCode == "O") {
+        application.messageBox("Digitalisierung", "Die Funktion kann nur für Titelsätze des Satztyps \"A\" verwendet werden.", "alert-icon");
+        return true;
+    }
+    
+    //-- open title; da keine Expansion aus Vollansicht
+    application.activeWindow.command("k p", false);
+    
+    //--- vars we need
+    var feld4244 = new Array();
+    //var subfield = "";
+    var code = "";
+    var x = 0;
+    var current;
+    var verbal;
+    var matches;
+    var myTrim = function(t) {
+        return t.replace(/^\s+|\s+$/gm,'');
+    }
+    
+    var MyExpansion = function(expansion) {
+        var re = new RegExp("(.*)\$[gcn]([^:]*)[:]?[ ]?([^:]*)")
+        while(expansion.match(/\$\$/))
+        {
+            expansion = expansion.replace(/\$\$/, "\$");
+        }
+        expansion = expansion.replace(/\$b/, " / ");
+        if(expansion.match(/\u0192/))
+        {
+            re = new RegExp("(.*)"+delimiterReg+"[gcn]([^:]*)[:]?[ ]?([^:]*)")
+        }
+        expansion = expansion.replace(re, "$l$1 <$2>$t$3");
+        __zdbError(expansion.match(re));
+        return expansion;
+    }
+    var _code = {
+        f:"s#Fortgesetzt von",
+        s:"f#Fortsetzung von"
+    };
+    //-- analyse and convert field 4244
+    while(application.activeWindow.title.findTag("039E", x, false, true, false) !== ""){
+        current = application.activeWindow.title.currentField;
+        feld4244[x] = current.substr(4);
+        re = new RegExp(delimiterReg+"b.");
+        code = feld4244[x].match(re)[0][2];
+        
+        if("z" != code) // Altdaten
+        {
+            re = new RegExp(delimiterReg+"b."+delimiterReg+".");
+            //---switch the subfields
+            switch(feld4244[x].match(re)[0][4])
+            {
+                case "r" :
+                    sf_t = "$t" +  myTrim(feld4244[x].match(/--->\s([^\/]+)/)[1]);
+                    split = feld4244[x].split(/\s\/\s/);
+                    sf_l = split[1] ? "$l" + myTrim(split[1]) : "";
+                    feld4244[x] = "4244 " + _code[code] +  sf_l + sf_t;
+                break;
+                case "a" :
+                
+                    re = new RegExp(delimiterReg+"b."+delimiterReg+"a(.*)"+delimiterReg+"9");
+                    re2 = new RegExp(delimiterReg+"8\s?(?:--T..--\s)?\s?(?:.*)--[A-Za-z0-9]{4}--\s?:?\s?(.*)");
+                    feld4244[x] = "4244 " + code +"#" + feld4244[x].match(re)[1] + MyExpansion(feld4244[x].match(re2)[1]);
+                break;
+                default : 
+                    re = new RegExp(delimiterReg+"8\s?(?:--T..--\s)?\s?(?:.*)--[A-Za-z0-9]{4}--\s?:?\s?(.*)");
+                    feld4244[x] = "4244 " + code +"#{" + __zdbSwitchCode4244(code) + " ---> " + __expansionUF(feld4244[x].match(re)[1]) + "}";
+                break;
+            }
+        } 
+        x++;
+    }
+
+    var felder424X = new Object();
+    felder424X[4241] = {p:"039B",kat:"4241",verbal:"",cont:""};
+    felder424X[4242] = {p:"039C",kat:"4242",verbal:"",cont:""};
+    felder424X[4243] = {p:"039D",kat:"4243",verbal:"",cont:""};
+    felder424X[4245] = {p:"039S",kat:"4245",verbal:"",cont:""};
+    for(var x in felder424X)
+    {
+        var i = 0;
+        while( application.activeWindow.title.findTag(felder424X[x].p, i, false, true, false) !== "")
+        {
+            current = application.activeWindow.title.currentField;
+            felder424X[x].cont = current.substr(4);
+            
+            verbal = false;
+            matches = false;
+            re = new RegExp(delimiterReg+"r(.*)"+delimiterReg);
+            if(verbal = felder424X[x].cont.match(re))
+            {
+                felder424X[x].verbal = felder424X[x].kat + " " + verbal[1];
+            }
+            else
+            {
+                
+                re = new RegExp(delimiterReg+"a(.*)"+delimiterReg+"9.*"+delimiterReg+"8\s?--A[A-Za-z]{3}--\s?:?\s?(?:--T..--\s)?(.*)");
+                if(matches = felder424X[x].cont.match(re))
+                {
+                    if("039S" == felder424X[x].p)
+                    {
+                        felder424X[x].verbal =  felder424X[x].kat + " {" + matches[1] + " \"" + __expansionUF(matches[2]) + "\"}";
+                    }
+                    else
+                    {
+                        felder424X[x].verbal =  felder424X[x].kat + " {" + matches[1] + " ---> " + __expansionUF(matches[2]) + "}";
+                    }
+                }
+                
+            }
+            i++;
+        }
+    }
+    //-- close title and go back
+    zdb_Back();
+    
+
+    // Titelkopie auf zdb_titeldatenkopie_digi.ttl setzen
+    var titlecopyfileStandard = application.getProfileString("winibw.filelocation", "titlecopy", "");
+    application.activeWindow.titleCopyFile = copyFile;
+    application.overwriteMode = false;
+    var idn = application.activeWindow.getVariable("P3GPP");
+    application.activeWindow.command("show d", false);
+
+    // Gespeicherte individuelle Angaben aus Datei DigiConfig.txt (sofern vorhanden) übernehmen
+    if(digiConfig == false)
+    {
+        var digiConfig = new Object();
+        var fileInput = Components.classes["@oclcpica.nl/scriptinputfile;1"].createInstance(Components.interfaces.IInputTextFile);
+        if(fileInput.openSpecial("ProfD", "DigiConfig.txt")) {
+            var aLine = "";
+            while((aLine = fileInput.readLine()) != null) {
+                partOfLine = aLine.match(/([0-9]*)\s(.*)/);
+
+                if (partOfLine[1] == "1101" && partOfLine[2] == "") {
+                    digiConfig[partOfLine[1]] = {kat:partOfLine[1],cont:" cr"};
+                }
+                else if(partOfLine[1] == "4085")
+                {
+                    digiConfig[partOfLine[1]] = {kat:partOfLine[1]+" =u ",cont:partOfLine[2]};
+                }
+                else
+                {
+                    digiConfig[partOfLine[1]] = {kat:partOfLine[1], cont:" "+partOfLine[2]};
                 }
                 
             }
